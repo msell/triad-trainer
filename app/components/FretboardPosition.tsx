@@ -1,5 +1,5 @@
 import { View, StyleSheet, ViewStyle, Dimensions } from "react-native"
-import { Canvas, Circle, Group, Path, Skia } from "@shopify/react-native-skia"
+import { Canvas, Circle, Group, Path, Skia, Text } from "@shopify/react-native-skia"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { colors, ThemedStyle } from "@/theme"
 
@@ -21,8 +21,14 @@ interface FretProps {
 const GuitarString = ({ offset, index }: GuitarStringProps) => {
   let strokeWidth = 5
   if (index > 0) {
-    strokeWidth = index * 0.8
+    strokeWidth = 6 - index * 0.8
   }
+
+  if (__DEV__) {
+    console.tron.log("GuitarString", { index, offset, strokeWidth })
+  }
+
+  // TODO: - make the string fade out after the last fret, that migth be a nice effect
   return (
     <Path
       path={Skia.Path.Make().moveTo(offset, 50).lineTo(offset, HEIGHT)}
@@ -60,8 +66,25 @@ const Nut = ({ width, verticalOffset }: NutProps) => {
   )
 }
 
-export const Dot = () => {
-  return <Circle cx={330} cy={50} r={28} color={colors.palette.angry500} />
+export interface NoteProps {
+  note: string
+  fret: number
+  x: number
+  y: number
+}
+
+interface DotProps {
+  cx: number
+  cy: number
+  color?: string
+}
+
+export const Dot = (props: DotProps) => {
+  return <Circle {...props} r={28} color={colors.palette.angry500} />
+}
+
+export const Note = (props: NoteProps) => {
+  return <Text text={props.note} x={props.x} y={props.y} color={colors.palette.angry500} />
 }
 
 export const FretboardPosition = () => {
@@ -72,7 +95,7 @@ export const FretboardPosition = () => {
 
   return (
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
-      <Nut width={exactWidth} verticalOffset={44} />
+      <Nut width={exactWidth} verticalOffset={46} />
 
       <Group transform={[{ translateY: 20 }]}>
         <Fret offset={100} />
@@ -80,12 +103,12 @@ export const FretboardPosition = () => {
         <Fret offset={300} />
         <Fret offset={400} />
       </Group>
-      <Group>
+      <Group transform={[{ translateX: 12 }]}>
         {STRINGS.map((_, index) => (
           <GuitarString key={index} offset={stringSpacing * index} index={index + 1} />
         ))}
       </Group>
-      <Dot />
+      <Dot cx={330} cy={50} />
     </Canvas>
   )
 }

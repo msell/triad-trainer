@@ -11,19 +11,24 @@ const FRET_COLOR = colors.palette.neutral400
 
 interface GuitarStringProps {
   offset: number
+  index: number
 }
 
 interface FretProps {
   offset: number
 }
 
-const GuitarString = ({ offset }: GuitarStringProps) => {
+const GuitarString = ({ offset, index }: GuitarStringProps) => {
+  let strokeWidth = 5
+  if (index > 0) {
+    strokeWidth = index * 0.8
+  }
   return (
     <Path
       path={Skia.Path.Make().moveTo(offset, 50).lineTo(offset, HEIGHT)}
       color={STRING_COLOR}
       style="stroke"
-      strokeWidth={4}
+      strokeWidth={strokeWidth}
     />
   )
 }
@@ -39,6 +44,26 @@ const Fret = ({ offset }: FretProps) => {
   )
 }
 
+interface NutProps {
+  width: number
+  verticalOffset: number
+}
+
+const Nut = ({ width, verticalOffset }: NutProps) => {
+  return (
+    <Path
+      path={Skia.Path.Make().moveTo(0, verticalOffset).lineTo(width, verticalOffset)}
+      color={NUT_COLOR}
+      style="stroke"
+      strokeWidth={8}
+    />
+  )
+}
+
+export const Dot = () => {
+  return <Circle cx={330} cy={50} r={28} color={colors.palette.angry500} />
+}
+
 export const FretboardPosition = () => {
   const { themed } = useAppTheme()
   const screenWidth = Dimensions.get("window").width
@@ -47,14 +72,7 @@ export const FretboardPosition = () => {
 
   return (
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
-      <Path
-        path={Skia.Path.Make()
-          .moveTo(0, 44)
-          .lineTo(exactWidth * 1.1, 44)}
-        color={NUT_COLOR}
-        style="stroke"
-        strokeWidth={12}
-      />
+      <Nut width={exactWidth} verticalOffset={44} />
 
       <Group transform={[{ translateY: 20 }]}>
         <Fret offset={100} />
@@ -64,9 +82,10 @@ export const FretboardPosition = () => {
       </Group>
       <Group>
         {STRINGS.map((_, index) => (
-          <GuitarString key={index} offset={stringSpacing * index} />
+          <GuitarString key={index} offset={stringSpacing * index} index={index + 1} />
         ))}
       </Group>
+      <Dot />
     </Canvas>
   )
 }
@@ -74,4 +93,7 @@ const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
   maxWidth: 400,
   height: HEIGHT,
+  borderRadius: 10,
+  boxShadow: `0 0 10px ${colors.palette.neutral400}`,
+  backgroundColor: colors.palette.neutral100,
 })

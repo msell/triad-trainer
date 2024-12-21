@@ -4,14 +4,16 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import { colors, ThemedStyle } from "@/theme"
 
 const STRINGS = [1, 2, 3, 4, 5, 6]
-const FRETS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 const HEIGHT = 500
 const NUT_COLOR = colors.palette.secondary400
 const STRING_COLOR = colors.palette.secondary300
-
-const FRET_WIDTH = 12
+const FRET_COLOR = colors.palette.neutral400
 
 interface GuitarStringProps {
+  offset: number
+}
+
+interface FretProps {
   offset: number
 }
 
@@ -26,12 +28,23 @@ const GuitarString = ({ offset }: GuitarStringProps) => {
   )
 }
 
+const Fret = ({ offset }: FretProps) => {
+  return (
+    <Path
+      path={Skia.Path.Make().moveTo(0, offset).lineTo(500, offset)}
+      color={FRET_COLOR}
+      style="stroke"
+      strokeWidth={2}
+    />
+  )
+}
+
 export const FretboardPosition = () => {
   const { themed } = useAppTheme()
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
-  const stringSpacing = exactWidth / (STRINGS.length + 1)
-  const startOffset = stringSpacing / 2
+  const stringSpacing = (exactWidth * 1.1) / STRINGS.length
+
   return (
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
       <Path
@@ -43,9 +56,15 @@ export const FretboardPosition = () => {
         strokeWidth={12}
       />
 
-      <Group transform={[{ translateX: startOffset }]}>
+      <Group transform={[{ translateY: 20 }]}>
+        <Fret offset={100} />
+        <Fret offset={200} />
+        <Fret offset={300} />
+        <Fret offset={400} />
+      </Group>
+      <Group>
         {STRINGS.map((_, index) => (
-          <GuitarString key={index} offset={startOffset + stringSpacing * index} />
+          <GuitarString key={index} offset={stringSpacing * index} />
         ))}
       </Group>
     </Canvas>
@@ -55,5 +74,5 @@ const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
   maxWidth: 400,
   height: HEIGHT,
-  backgroundColor: colors.palette.neutral300,
+  // backgroundColor: colors.palette.neutral300,
 })

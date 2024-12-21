@@ -74,5 +74,4 @@ const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
   maxWidth: 400,
   height: HEIGHT,
-  // backgroundColor: colors.palette.neutral300,
 })

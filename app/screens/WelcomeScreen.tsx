@@ -1,83 +1,29 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
-import { Text, Screen } from "@/components"
-import { isRTL } from "../i18n"
+import { ViewStyle, View } from "react-native"
+import { Screen } from "@/components"
 import { AppStackScreenProps } from "../navigators"
 import { $styles, type ThemedStyle } from "@/theme"
-import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import { useAppTheme } from "@/utils/useAppTheme"
 
-const welcomeLogo = require("../../assets/images/logo.png")
-const welcomeFace = require("../../assets/images/welcome-face.png")
+import { useAppTheme } from "@/utils/useAppTheme"
+import { FretboardPosition } from "@/components/FretboardPosition"
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen() {
-  const { themed, theme } = useAppTheme()
-
-  const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
-
+  const { themed } = useAppTheme()
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
-      <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={themed($welcomeHeading)}
-          tx="welcomeScreen:readyForLaunch"
-          preset="heading"
-        />
-        <Text tx="welcomeScreen:exciting" preset="subheading" />
-        <Image
-          style={$welcomeFace}
-          source={welcomeFace}
-          resizeMode="contain"
-          tintColor={theme.isDark ? theme.colors.palette.neutral900 : undefined}
-        />
-      </View>
-
-      <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-        <Text tx="welcomeScreen:postscript" size="md" />
+      <View style={themed($container)}>
+        <FretboardPosition />
       </View>
     </Screen>
   )
 })
 
-const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  flexShrink: 1,
+const $container: ThemedStyle<ViewStyle> = () => ({
   flexGrow: 1,
-  flexBasis: "57%",
+  flexBasis: "70%",
+  alignItems: "center",
   justifyContent: "center",
-  paddingHorizontal: spacing.lg,
-})
-
-const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
-  flexShrink: 1,
-  flexGrow: 0,
-  flexBasis: "43%",
-  backgroundColor: colors.palette.neutral100,
-  borderTopLeftRadius: 16,
-  borderTopRightRadius: 16,
-  paddingHorizontal: spacing.lg,
-  justifyContent: "space-around",
-})
-
-const $welcomeLogo: ThemedStyle<ImageStyle> = ({ spacing }) => ({
-  height: 88,
-  width: "100%",
-  marginBottom: spacing.xxl,
-})
-
-const $welcomeFace: ImageStyle = {
-  height: 169,
-  width: 269,
-  position: "absolute",
-  bottom: -47,
-  right: -80,
-  transform: [{ scaleX: isRTL ? -1 : 1 }],
-}
-
-const $welcomeHeading: ThemedStyle<TextStyle> = ({ spacing }) => ({
-  marginBottom: spacing.md,
 })

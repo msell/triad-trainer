@@ -1,13 +1,15 @@
-import { ViewStyle, Dimensions } from "react-native"
-import { Canvas, Group } from "@shopify/react-native-skia"
-import { useAppTheme } from "@/utils/useAppTheme"
 import { colors, ThemedStyle } from "@/theme"
-import { Note } from "./Note"
+import { NotePosition } from "@/types/CommonTypes"
+import { useAppTheme } from "@/utils/useAppTheme"
+import { Canvas, Group } from "@shopify/react-native-skia"
+import { useCallback } from "react"
+import { Dimensions, ViewStyle } from "react-native"
+
 import { Fret } from "./Fret"
 import { GuitarString } from "./GuitarString"
+import { Note } from "./Note"
 import { Nut } from "./Nut"
-import { useCallback } from "react"
-import { NotePosition } from "@/types/CommonTypes"
+import { SkiaText } from "./SkiaText"
 
 const HEIGHT = 500
 const NUT_COLOR = colors.palette.secondary400
@@ -18,7 +20,7 @@ const TOP_MARGIN = 46
 const FRET_SPACING = 100
 const NUMBER_OF_FRETS = 4
 const LEFT_GUTTER = 28
-
+const TUNING = ["E", "A", "D", "G", "B", "e"]
 interface Props {
   notes?: NotePosition[]
   startingFret?: number
@@ -54,15 +56,24 @@ export const FretboardPosition = (_: Props) => {
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
         ))}
       </Group>
+
       <Group transform={[{ translateX: LEFT_GUTTER }]}>
         {Array.from({ length: NUM_STRINGS }).map((_, index) => (
-          <GuitarString
-            key={index}
-            offset={stringSpacing * index}
-            index={index + 1}
-            color={STRING_COLOR}
-            height={HEIGHT}
-          />
+          <Group key={index}>
+            <SkiaText
+              x={stringSpacing * index + 4}
+              y={20}
+              text={TUNING[index]}
+              fontSize={30}
+              color={NUT_COLOR}
+            />
+            <GuitarString
+              offset={stringSpacing * index}
+              index={index + 1}
+              color={STRING_COLOR}
+              height={HEIGHT}
+            />
+          </Group>
         ))}
       </Group>
 

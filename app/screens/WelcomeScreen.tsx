@@ -15,7 +15,13 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($container)}>
-        <FretboardPosition />
+        <FretboardPosition
+          notes={[
+            { stringNumber: 1, fretNumber: 3 },
+            { stringNumber: 2, fretNumber: 3 },
+            { stringNumber: 3, fretNumber: 4 },
+          ]}
+        />
       </View>
     </Screen>
   )

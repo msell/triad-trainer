@@ -1,0 +1,708 @@
+{
+  "C": {
+    "major": {
+      "root": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 0
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 1
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 0
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 1
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 0
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 2
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 0
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 2
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 3
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 2
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 3
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 3
+          }
+        ]
+      },
+      "firstInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 7
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 8
+          }
+        ]
+      },
+      "secondInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 10
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 12
+          }
+        ]
+      }
+    },
+    "minor": {
+      "root": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 3
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 8
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 8
+          }
+        ]
+      },
+      "firstInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 10
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 12
+          }
+        ]
+      },
+      "secondInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 12
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 13
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 14
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 13
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 14
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 15
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 14
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 15
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 15
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 15
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 15
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 17
+          }
+        ]
+      }
+    },
+    "diminished": {
+      "root": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 2
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 3
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 4
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 3
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 4
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 6
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 7
+          }
+        ]
+      },
+      "firstInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 7
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 8
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 9
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 9
+          }
+        ]
+      },
+      "secondInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 10
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 11
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 11
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 12
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 11
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 12
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 12
+          }
+        ]
+      }
+    },
+    "augmented": {
+      "root": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 3
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 6
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 7
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 8
+          }
+        ]
+      },
+      "firstInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 4
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 6
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 5
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 7
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 6
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 8
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 9
+          }
+        ]
+      },
+      "secondInversion": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 7
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          }
+        ],
+        "2": [
+          {
+            "stringNumber": 2,
+            "fretNumber": 8
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          }
+        ],
+        "3": [
+          {
+            "stringNumber": 3,
+            "fretNumber": 9
+          },
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 11
+          }
+        ],
+        "4": [
+          {
+            "stringNumber": 4,
+            "fretNumber": 10
+          },
+          {
+            "stringNumber": 5,
+            "fretNumber": 11
+          },
+          {
+            "stringNumber": 6,
+            "fretNumber": 12
+          }
+        ]
+      }
+    }
+  }
+}

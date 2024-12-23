@@ -1,54 +1,52 @@
 import { ViewStyle, Dimensions } from "react-native"
-import { Canvas, Group, useFont } from "@shopify/react-native-skia"
+import { Canvas, Group } from "@shopify/react-native-skia"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { colors, ThemedStyle } from "@/theme"
-import { useCallback, useEffect } from "react"
 import { Note } from "./Note"
 import { Fret } from "./Fret"
 import { GuitarString } from "./GuitarString"
 import { Nut } from "./Nut"
+import { useCallback } from "react"
+import { NotePosition } from "@/types/CommonTypes"
 
 const HEIGHT = 500
 const NUT_COLOR = colors.palette.secondary400
 const STRING_COLOR = colors.palette.secondary300
 const FRET_COLOR = colors.palette.neutral400
 const NUM_STRINGS = 6
-const LEFT_MARGIN = 10
 const TOP_MARGIN = 46
 const FRET_SPACING = 100
 const NUMBER_OF_FRETS = 4
-interface NotePosition {
-  stringNumber: number
-  fretNumber: number
-}
+const LEFT_GUTTER = 28
 
 interface Props {
   notes?: NotePosition[]
   startingFret?: number
+  chord?: string
+  inversion?: string
+  stringset?: number
 }
 
 const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN
 }
 
-const getNoteCoordinates = (note: NotePosition): { x: number; y: number } => {
-  const x = NUM_STRINGS - note.stringNumber + LEFT_MARGIN
-  const y = fretOffsetY(note.fretNumber) - FRET_SPACING / 2
-
-  return { x, y }
-}
-
-export const FretboardPosition = () => {
+export const FretboardPosition = (_: Props) => {
   const { themed } = useAppTheme()
-  const font = useFont(require("../assets/fonts/LilitaOne-Regular.ttf"), 44)
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
-  const stringSpacing = (exactWidth * 1.1) / NUM_STRINGS
+  const stringSpacing = exactWidth / NUM_STRINGS
 
-  useEffect(() => {
-    // eslint-disable-next-line reactotron/no-tron-in-production
-    console.tron.log("font", font)
-  }, [font])
+  const getNoteCoordinates = useCallback(
+    (note: NotePosition): { x: number; y: number } => {
+      const x = (NUM_STRINGS - note.stringNumber) * stringSpacing + LEFT_GUTTER
+      const y = fretOffsetY(note.fretNumber) - FRET_SPACING / 2
+
+      return { x, y }
+    },
+    [stringSpacing],
+  )
+
   return (
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
       <Group>
@@ -56,7 +54,7 @@ export const FretboardPosition = () => {
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
         ))}
       </Group>
-      <Group transform={[{ translateX: 12 }]}>
+      <Group transform={[{ translateX: LEFT_GUTTER }]}>
         {Array.from({ length: NUM_STRINGS }).map((_, index) => (
           <GuitarString
             key={index}
@@ -69,10 +67,9 @@ export const FretboardPosition = () => {
       </Group>
 
       <Nut width={exactWidth} verticalOffset={TOP_MARGIN} color={NUT_COLOR} />
-      <Note {...getNoteCoordinates({ stringNumber: 6, fretNumber: 1 })} text="X" />
-      <Note x={330} y={50} text="R" />
-      <Note x={330} y={190} text="1" />
-      <Note x={200} y={230} text="5" />
+      <Note {...getNoteCoordinates({ stringNumber: 1, fretNumber: 3 })} text="1" />
+      <Note {...getNoteCoordinates({ stringNumber: 2, fretNumber: 3 })} text="5" />
+      <Note {...getNoteCoordinates({ stringNumber: 3, fretNumber: 4 })} text="3" />
     </Canvas>
   )
 }

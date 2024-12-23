@@ -1,114 +1,78 @@
-import { View, StyleSheet, ViewStyle, Dimensions } from "react-native"
-import { Canvas, Circle, Group, Path, Skia, Text } from "@shopify/react-native-skia"
+import { ViewStyle, Dimensions } from "react-native"
+import { Canvas, Group, useFont } from "@shopify/react-native-skia"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { colors, ThemedStyle } from "@/theme"
+import { useCallback, useEffect } from "react"
+import { Note } from "./Note"
+import { Fret } from "./Fret"
+import { GuitarString } from "./GuitarString"
+import { Nut } from "./Nut"
 
-const STRINGS = [1, 2, 3, 4, 5, 6]
 const HEIGHT = 500
 const NUT_COLOR = colors.palette.secondary400
 const STRING_COLOR = colors.palette.secondary300
 const FRET_COLOR = colors.palette.neutral400
-
-interface GuitarStringProps {
-  offset: number
-  index: number
+const NUM_STRINGS = 6
+const LEFT_MARGIN = 10
+const TOP_MARGIN = 46
+const FRET_SPACING = 100
+const NUMBER_OF_FRETS = 4
+interface NotePosition {
+  stringNumber: number
+  fretNumber: number
 }
 
-interface FretProps {
-  offset: number
+interface Props {
+  notes?: NotePosition[]
+  startingFret?: number
 }
 
-const GuitarString = ({ offset, index }: GuitarStringProps) => {
-  let strokeWidth = 5
-  if (index > 0) {
-    strokeWidth = 6 - index * 0.8
-  }
-
-  if (__DEV__) {
-    console.tron.log("GuitarString", { index, offset, strokeWidth })
-  }
-
-  // TODO: - make the string fade out after the last fret, that migth be a nice effect
-  return (
-    <Path
-      path={Skia.Path.Make().moveTo(offset, 50).lineTo(offset, HEIGHT)}
-      color={STRING_COLOR}
-      style="stroke"
-      strokeWidth={strokeWidth}
-    />
-  )
+const fretOffsetY = (fretNumber: number) => {
+  return fretNumber * FRET_SPACING + TOP_MARGIN
 }
 
-const Fret = ({ offset }: FretProps) => {
-  return (
-    <Path
-      path={Skia.Path.Make().moveTo(0, offset).lineTo(500, offset)}
-      color={FRET_COLOR}
-      style="stroke"
-      strokeWidth={2}
-    />
-  )
-}
+const getNoteCoordinates = (note: NotePosition): { x: number; y: number } => {
+  const x = NUM_STRINGS - note.stringNumber + LEFT_MARGIN
+  const y = fretOffsetY(note.fretNumber) - FRET_SPACING / 2
 
-interface NutProps {
-  width: number
-  verticalOffset: number
-}
-
-const Nut = ({ width, verticalOffset }: NutProps) => {
-  return (
-    <Path
-      path={Skia.Path.Make().moveTo(0, verticalOffset).lineTo(width, verticalOffset)}
-      color={NUT_COLOR}
-      style="stroke"
-      strokeWidth={8}
-    />
-  )
-}
-
-export interface NoteProps {
-  note: string
-  fret: number
-  x: number
-  y: number
-}
-
-interface DotProps {
-  cx: number
-  cy: number
-  color?: string
-}
-
-export const Dot = (props: DotProps) => {
-  return <Circle {...props} r={28} color={colors.palette.angry500} />
-}
-
-export const Note = (props: NoteProps) => {
-  return <Text text={props.note} x={props.x} y={props.y} color={colors.palette.angry500} />
+  return { x, y }
 }
 
 export const FretboardPosition = () => {
   const { themed } = useAppTheme()
+  const font = useFont(require("../assets/fonts/LilitaOne-Regular.ttf"), 44)
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
-  const stringSpacing = (exactWidth * 1.1) / STRINGS.length
+  const stringSpacing = (exactWidth * 1.1) / NUM_STRINGS
 
+  useEffect(() => {
+    // eslint-disable-next-line reactotron/no-tron-in-production
+    console.tron.log("font", font)
+  }, [font])
   return (
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
-      <Nut width={exactWidth} verticalOffset={46} />
-
-      <Group transform={[{ translateY: 20 }]}>
-        <Fret offset={100} />
-        <Fret offset={200} />
-        <Fret offset={300} />
-        <Fret offset={400} />
-      </Group>
-      <Group transform={[{ translateX: 12 }]}>
-        {STRINGS.map((_, index) => (
-          <GuitarString key={index} offset={stringSpacing * index} index={index + 1} />
+      <Group>
+        {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
+          <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
         ))}
       </Group>
-      <Dot cx={330} cy={50} />
+      <Group transform={[{ translateX: 12 }]}>
+        {Array.from({ length: NUM_STRINGS }).map((_, index) => (
+          <GuitarString
+            key={index}
+            offset={stringSpacing * index}
+            index={index + 1}
+            color={STRING_COLOR}
+            height={HEIGHT}
+          />
+        ))}
+      </Group>
+
+      <Nut width={exactWidth} verticalOffset={TOP_MARGIN} color={NUT_COLOR} />
+      <Note {...getNoteCoordinates({ stringNumber: 6, fretNumber: 1 })} text="X" />
+      <Note x={330} y={50} text="R" />
+      <Note x={330} y={190} text="1" />
+      <Note x={200} y={230} text="5" />
     </Canvas>
   )
 }

@@ -10,12 +10,15 @@ import {
   SpaceGrotesk_700Bold as spaceGroteskBold,
 } from "@expo-google-fonts/space-grotesk"
 
+import { LilitaOne_400Regular as lilitaOneRegular } from "@expo-google-fonts/lilita-one"
+
 export const customFontsToLoad = {
   spaceGroteskLight,
   spaceGroteskRegular,
   spaceGroteskMedium,
   spaceGroteskSemiBold,
   spaceGroteskBold,
+  lilitaOneRegular,
 }
 
 const fonts = {
@@ -26,6 +29,9 @@ const fonts = {
     medium: "spaceGroteskMedium",
     semiBold: "spaceGroteskSemiBold",
     bold: "spaceGroteskBold",
+  },
+  lilitaOne: {
+    normal: "lilitaOneRegular",
   },
   helveticaNeue: {
     // iOS only font.
@@ -68,4 +74,5 @@ export const typography = {
    * Lets get fancy with a monospace font!
    */
   code: Platform.select({ ios: fonts.courier, android: fonts.monospace }),
+  fun: fonts.lilitaOne,
 }

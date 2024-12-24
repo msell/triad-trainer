@@ -33,7 +33,7 @@ const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN
 }
 
-export const FretboardPosition = (_: Props) => {
+export const FretboardPosition = ({ notes }: Props) => {
   const { themed } = useAppTheme()
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
@@ -78,9 +78,13 @@ export const FretboardPosition = (_: Props) => {
       </Group>
 
       <Nut width={exactWidth} verticalOffset={TOP_MARGIN} color={NUT_COLOR} />
-      <Note {...getNoteCoordinates({ stringNumber: 1, fretNumber: 3 })} text="1" />
-      <Note {...getNoteCoordinates({ stringNumber: 2, fretNumber: 3 })} text="5" />
-      <Note {...getNoteCoordinates({ stringNumber: 3, fretNumber: 4 })} text="3" />
+      {notes?.map((note) => (
+        <Note
+          key={`${note.stringNumber}-${note.fretNumber}`}
+          {...getNoteCoordinates(note)}
+          text={note.fretNumber.toString()}
+        />
+      ))}
     </Canvas>
   )
 }

@@ -1,40 +1,24 @@
 import { View } from "react-native"
 import { Text } from "@/components"
 import { FretboardPosition } from "./FretboardPosition"
-import { NotePosition } from "@/types/CommonTypes"
+import data from "@/data/triads-keyof-c.json"
 
 interface Props {
-  chord: string
+  chord: "C"
   chordType: "major" | "minor" | "diminished" | "augmented"
-  inversion: "root" | "first" | "second"
+  inversion: "root" | "firstInversion" | "secondInversion"
   stringset: "1" | "2" | "3" | "4"
 }
 
-const getNotes = (props: Props): NotePosition[] => {
-  if (props.chordType === "major") {
-    return []
-  }
-  if (props.chordType === "minor") {
-    // TODO: Implement minor chord
-    return []
-  }
-  if (props.chordType === "diminished") {
-    // TODO: Implement diminished chord
-    return []
-  }
-  if (props.chordType === "augmented") {
-    // TODO: Implement augmented chord
-    return []
-  }
-  return []
-}
-
-export const Triad = ({ chord, inversion, stringset }: Props) => {
+export const Triad = ({ chord, chordType, inversion, stringset }: Props) => {
+  const notes = data[chord][chordType][inversion][stringset] as any
+  console.tron.log(notes)
   return (
     <View>
       <Text>{chord}</Text>
       <Text>{inversion}</Text>
-      <FretboardPosition />
+      <FretboardPosition notes={notes} />
+      <Text>{stringset}</Text>
     </View>
   )
 }

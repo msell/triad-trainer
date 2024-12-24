@@ -1,7 +1,7 @@
 import { Note } from "types/music.types"
 
 export const calculateFretRange = (notes: Note[]) => {
-  const minFret = Math.min(...notes.map((note) => note.fret))
+  const minFret = Math.max(1, Math.min(...notes.map((note) => note.fret)))
   let maxFret = Math.max(...notes.map((note) => note.fret))
 
   const fretRange = maxFret - minFret

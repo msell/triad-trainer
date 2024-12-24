@@ -1,13 +1,4 @@
-import {
-  Chord,
-  ChordType,
-  Fretboard,
-  Inversion,
-  Note,
-  StringSet,
-  TriadNote,
-  Tunings,
-} from "types/music.types"
+import { Chord, ChordType, Fretboard, Inversion, Note, StringSet, TriadNote, Tunings } from "types/music.types"
 
 const standardFretboard: Fretboard = {
   tuning: "standard",
@@ -63,7 +54,43 @@ type MajorTriad = {
 
 const MajorScaleFormulaInSemitones = [0, 2, 4, 5, 7, 9, 11]
 
-// todo: so many of these functions can be moved to utils and also many of these types can be global
+interface StringSetDetails {
+  bottomString: number
+  middleString: number
+  topString: number
+}
+
+const getStrings = (stringSet: StringSet): StringSetDetails => {
+  switch (stringSet) {
+    case 1:
+      return {
+        bottomString: 3,
+        middleString: 2,
+        topString: 1,
+      }
+    case 2:
+      return {
+        bottomString: 4,
+        middleString: 3,
+        topString: 2,
+      }
+    case 3:
+      return {
+        bottomString: 5,
+        middleString: 4,
+        topString: 3,
+      }
+    case 4:
+      return {
+        bottomString: 6,
+        middleString: 5,
+        topString: 4,
+      }
+    default:
+      throw new Error(`Invalid string set ${stringSet}`)
+  }
+}
+
 const getNoteByInterval = (root: string, interval: number): string => {
   const stringNotes = standardFretboard.strings[0] // Use any string, here the first string is used
   const rootIndex = stringNotes.indexOf(root)
@@ -140,41 +167,39 @@ export const getTriads = ({
     throw new Error(`only major chords are supported at this time`)
   }
 
-  if (stringSet === 1) {
-    const bottomStringNotes = getStringNotes({ string: 3, minFret, maxFret, tuning })
-    const middleStringNotes = getStringNotes({ string: 2, minFret, maxFret, tuning })
-    const topStringNotes = getStringNotes({ string: 1, minFret, maxFret, tuning })
-    const majorTriad = getMajorTriad(chord)
+  const { bottomString, middleString, topString } = getStrings(stringSet)
+  const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
+  const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
+  const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
+  const majorTriad = getMajorTriad(chord)
 
-    const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, note) => {
-      if (note.note === majorTriad.root) {
-        acc.push({ ...note, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-
-    const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, note) => {
-      if (note.note === majorTriad.third) {
-        acc.push({ ...note, scaleDegree: 3 })
-      }
-      return acc
-    }, [])
-
-    const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, note) => {
-      if (note.note === majorTriad.fifth) {
-        acc.push({ ...note, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-
-    return {
-      chord,
-      inversion,
-      stringSet,
-      chordType,
-      notes: [...rootNotes, ...thirdNotes, ...fifthNotes],
+  const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, note) => {
+    if (note.note === majorTriad.root) {
+      acc.push({ ...note, scaleDegree: 1 })
     }
+    return acc
+  }, [])
+
+  const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, note) => {
+    if (note.note === majorTriad.third) {
+      acc.push({ ...note, scaleDegree: 3 })
+    }
+    return acc
+  }, [])
+
+  const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, note) => {
+    if (note.note === majorTriad.fifth) {
+      acc.push({ ...note, scaleDegree: 5 })
+    }
+    return acc
+  }, [])
+
+  return {
+    chord,
+    inversion,
+    stringSet,
+    chordType,
+    notes: [...rootNotes, ...thirdNotes, ...fifthNotes],
   }
 
-  throw new Error(`not implemented yet`)
 }

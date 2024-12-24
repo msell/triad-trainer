@@ -1,7 +1,8 @@
-import { View } from "react-native"
 import { Text } from "@/components"
-import { FretboardPosition } from "./FretboardPosition"
 import data from "@/data/triads-keyof-c.json"
+import { View } from "react-native"
+
+import { FretboardPosition } from "./FretboardPosition"
 
 interface Props {
   chord: "C"
@@ -12,12 +13,12 @@ interface Props {
 
 export const Triad = ({ chord, chordType, inversion, stringset }: Props) => {
   const notes = data[chord][chordType][inversion][stringset] as any
-  console.tron.log(notes)
+
   return (
     <View>
       <Text>{chord}</Text>
       <Text>{inversion}</Text>
-      <FretboardPosition notes={notes} />
+      <FretboardPosition notes={notes} inversion={inversion} stringset={stringset} />
       <Text>{stringset}</Text>
     </View>
   )

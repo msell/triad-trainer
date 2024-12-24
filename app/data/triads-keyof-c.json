@@ -5,15 +5,15 @@
         "1": [
           {
             "stringNumber": 1,
-            "fretNumber": 0
+            "fretNumber": 3
           },
           {
             "stringNumber": 2,
-            "fretNumber": 1
+            "fretNumber": 5
           },
           {
             "stringNumber": 3,
-            "fretNumber": 0
+            "fretNumber": 5
           }
         ],
         "2": [

@@ -24,21 +24,57 @@ const TUNING = ["E", "A", "D", "G", "B", "e"]
 interface Props {
   notes?: NotePosition[]
   startingFret?: number
-  chord?: string
-  inversion?: string
-  stringset?: number
+  inversion: "root" | "firstInversion" | "secondInversion"
+  stringset: "1" | "2" | "3" | "4"
 }
 
 const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN
 }
 
-export const FretboardPosition = ({ notes }: Props) => {
+export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
   const { themed } = useAppTheme()
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
 
+  const getNoteDegree = (
+    inversion: "root" | "firstInversion" | "secondInversion",
+    string: number,
+    stringset: "1" | "2" | "3" | "4",
+  ) => {
+    // Stringset 1: strings 1,2,3
+    // Stringset 2: strings 2,3,4
+    // Stringset 3: strings 3,4,5
+    // Stringset 4: strings 4,5,6
+
+    const stringsetMappings = {
+      "1": [3, 2, 1],
+      "2": [4, 3, 2],
+      "3": [5, 4, 3],
+      "4": [6, 5, 4],
+    }
+
+    const currentStringset = stringsetMappings[stringset]
+    const positionInSet = currentStringset.indexOf(string)
+
+    if (positionInSet === -1) return null
+
+    const degreeMap = {
+      root: ["1", "3", "5"],
+      firstInversion: ["3", "5", "1"],
+      secondInversion: ["5", "1", "3"],
+    }
+
+    console.tron.log({
+      inversion,
+      positionInSet,
+      currentStringset,
+      degreeMap,
+      result: degreeMap[inversion][positionInSet],
+    })
+    return degreeMap[inversion][positionInSet]
+  }
   const getNoteCoordinates = useCallback(
     (note: NotePosition): { x: number; y: number } => {
       const x = (NUM_STRINGS - note.stringNumber) * stringSpacing + LEFT_GUTTER
@@ -82,7 +118,7 @@ export const FretboardPosition = ({ notes }: Props) => {
         <Note
           key={`${note.stringNumber}-${note.fretNumber}`}
           {...getNoteCoordinates(note)}
-          text={note.fretNumber.toString()}
+          text={getNoteDegree(inversion, note.stringNumber, stringset) ?? ""}
         />
       ))}
     </Canvas>

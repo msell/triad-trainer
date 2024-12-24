@@ -1,4 +1,13 @@
-import { Chord, ChordType, Fretboard, Inversion, Note, StringSet, TriadNote, Tunings } from "types/music.types"
+import {
+  Chord,
+  ChordType,
+  Fretboard,
+  Inversion,
+  Note,
+  StringSet,
+  TriadNote,
+  Tunings,
+} from "types/music.types"
 
 const standardFretboard: Fretboard = {
   tuning: "standard",
@@ -163,33 +172,49 @@ export const getTriads = ({
     throw new Error(`No fretboard found for tuning ${tuning}`)
   }
 
-  if (chordType !== "major") {
-    throw new Error(`only major chords are supported at this time`)
-  }
-
   const { bottomString, middleString, topString } = getStrings(stringSet)
   const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
   const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
   const majorTriad = getMajorTriad(chord)
 
-  const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, note) => {
-    if (note.note === majorTriad.root) {
-      acc.push({ ...note, scaleDegree: 1 })
+  const flatTheNote = (note: Note, stringNumber: number) => {
+    const index = standardFretboard.strings[stringNumber - 1].indexOf(note.note)
+
+    if (index === 0) {
+      throw new Error(`Cannot flat the note ${note.note} on string ${stringNumber}`)
+    }
+    const newNote = {
+      ...note,
+      note: standardFretboard.strings[stringNumber - 1][index - 1],
+      fret: note.fret - 1,
+      altNote: accidentalNotes[standardFretboard.strings[stringNumber - 1][index - 1]],
+    }
+
+    return newNote
+  }
+
+  const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
+    if (x.note === majorTriad.root) {
+      acc.push({ ...x, scaleDegree: 1 })
     }
     return acc
   }, [])
 
-  const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, note) => {
-    if (note.note === majorTriad.third) {
-      acc.push({ ...note, scaleDegree: 3 })
+  const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
+    if (x.note === majorTriad.third) {
+      if (chordType === "major") {
+        acc.push({ ...x, scaleDegree: 3 })
+      } else if (chordType === "minor") {
+        acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
+      }
     }
     return acc
   }, [])
 
-  const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, note) => {
-    if (note.note === majorTriad.fifth) {
-      acc.push({ ...note, scaleDegree: 5 })
+  const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
+    if (x.note === majorTriad.fifth) {
+      acc.push({ ...x, scaleDegree: 5 })
     }
     return acc
   }, [])
@@ -201,5 +226,4 @@ export const getTriads = ({
     chordType,
     notes: [...rootNotes, ...thirdNotes, ...fifthNotes],
   }
-
 }

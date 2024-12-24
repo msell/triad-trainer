@@ -22,10 +22,19 @@ const NUMBER_OF_FRETS = 4
 const LEFT_GUTTER = 28
 const TUNING = ["E", "A", "D", "G", "B", "e"]
 interface Props {
-  notes?: NotePosition[]
-  startingFret?: number
+  notes: NotePosition[]
   inversion: "root" | "firstInversion" | "secondInversion"
   stringset: "1" | "2" | "3" | "4"
+}
+
+function calculateStartingFret(notes: NotePosition[]): number {
+  if (!notes.length) return 0
+
+  // Find the minimum fret number from all notes
+  const minFret = Math.min(...notes.map((note) => note.fretNumber))
+
+  // Return one fret lower than the minimum, but not less than 0
+  return Math.max(0, minFret - 1)
 }
 
 const fretOffsetY = (fretNumber: number) => {
@@ -37,6 +46,8 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
+
+  const startingFret = calculateStartingFret(notes)
 
   const getNoteDegree = (
     inversion: "root" | "firstInversion" | "secondInversion",
@@ -66,19 +77,12 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
       secondInversion: ["5", "1", "3"],
     }
 
-    console.tron.log({
-      inversion,
-      positionInSet,
-      currentStringset,
-      degreeMap,
-      result: degreeMap[inversion][positionInSet],
-    })
     return degreeMap[inversion][positionInSet]
   }
   const getNoteCoordinates = useCallback(
     (note: NotePosition): { x: number; y: number } => {
       const x = (NUM_STRINGS - note.stringNumber) * stringSpacing + LEFT_GUTTER
-      const y = fretOffsetY(note.fretNumber) - FRET_SPACING / 2
+      const y = fretOffsetY(note.fretNumber - startingFret) - FRET_SPACING / 2
 
       return { x, y }
     },
@@ -121,6 +125,14 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
           text={getNoteDegree(inversion, note.stringNumber, stringset) ?? ""}
         />
       ))}
+      <SkiaText x={17} y={90} text={startingFret.toString()} fontSize={30} color={NUT_COLOR} />
+      <SkiaText
+        x={17}
+        y={290}
+        text={(startingFret + 2).toString()}
+        fontSize={30}
+        color={NUT_COLOR}
+      />
     </Canvas>
   )
 }

@@ -1,14 +1,13 @@
-type Chord = "A" | "Bb" | "B" | "C" | "Db" | "D" | "Eb" | "E" | "F" | "Gb" | "G" | "Ab"
-type Inversion = "root" | "first" | "second"
-type StringSet = 1 | 2 | 3 | 4
-type ChordType = "major" | "minor" | "diminished" | "augmented"
-
-type Tunings = "standard" | "dropD"
-
-type Fretboard = {
-  tuning: Tunings
-  strings: string[][]
-}
+import {
+  Chord,
+  ChordType,
+  Fretboard,
+  Inversion,
+  Note,
+  StringSet,
+  TriadNote,
+  Tunings,
+} from "types/music.types"
 
 const standardFretboard: Fretboard = {
   tuning: "standard",
@@ -43,17 +42,6 @@ export type TriadQuery = {
   tuning?: Tunings
   minFret?: number
   maxFret?: number
-}
-
-export type Note = {
-  fret: number
-  string: number
-  note: string
-  altNote?: string // for example, Bb is a flat note, but it's also a sharp note
-}
-
-export type TriadNote = Note & {
-  scaleDegree: number
 }
 
 export type TriadResult = TriadQuery & {
@@ -132,7 +120,6 @@ export const getStringNotes = ({
     })
   }
 
-  console.log(notes)
   return notes
 }
 

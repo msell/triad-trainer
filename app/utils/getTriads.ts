@@ -41,6 +41,8 @@ export type TriadQuery = {
   stringSet: StringSet
   chordType: ChordType
   tuning?: Tunings
+  minFret?: number
+  maxFret?: number
 }
 
 export type Note = {
@@ -50,8 +52,12 @@ export type Note = {
   altNote?: string // for example, Bb is a flat note, but it's also a sharp note
 }
 
+export type TriadNote = Note & {
+  scaleDegree: number
+}
+
 export type TriadResult = TriadQuery & {
-  notes: Note[]
+  notes: TriadNote[]
 }
 
 type StringNotesInput = {
@@ -59,6 +65,45 @@ type StringNotesInput = {
   tuning: Tunings
   minFret: number
   maxFret: number
+}
+
+type MajorTriad = {
+  root: string
+  third: string
+  fifth: string
+}
+
+const MajorScaleFormulaInSemitones = [0, 2, 4, 5, 7, 9, 11]
+
+// todo: so many of these functions can be moved to utils and also many of these types can be global
+const getNoteByInterval = (root: string, interval: number): string => {
+  const stringNotes = standardFretboard.strings[0] // Use any string, here the first string is used
+  const rootIndex = stringNotes.indexOf(root)
+
+  if (rootIndex === -1) {
+    throw new Error(`Root note ${root} not found on the fretboard`)
+  }
+
+  const targetIndex = (rootIndex + interval) % stringNotes.length
+  return stringNotes[targetIndex]
+}
+
+export const getThird = (root: string): string => {
+  const thirdInterval = MajorScaleFormulaInSemitones[2] // 4 semitones
+  return getNoteByInterval(root, thirdInterval)
+}
+
+export const getFifth = (root: string): string => {
+  const fifthInterval = MajorScaleFormulaInSemitones[4] // 7 semitones
+  return getNoteByInterval(root, fifthInterval)
+}
+
+export const getMajorTriad = (root: string): MajorTriad => {
+  return {
+    root,
+    third: getThird(root),
+    fifth: getFifth(root),
+  }
 }
 
 export const getStringNotes = ({
@@ -96,6 +141,7 @@ export const getTriads = ({
   inversion,
   stringSet,
   chordType = "major",
+  minFret = 0,
   maxFret = 15,
   tuning = "standard",
 }: TriadQuery): TriadResult => {
@@ -108,10 +154,38 @@ export const getTriads = ({
   }
 
   if (stringSet === 1) {
-    // find the root note on the 3rd string
-    const rootNotes = standardFretboard.strings[2].filter((note) => note === chord)
-    if (!rootNotes) {
-      throw new Error(`Root note ${chord} not found on the 3rd string`)
+    const bottomStringNotes = getStringNotes({ string: 3, minFret, maxFret, tuning })
+    const middleStringNotes = getStringNotes({ string: 2, minFret, maxFret, tuning })
+    const topStringNotes = getStringNotes({ string: 1, minFret, maxFret, tuning })
+    const majorTriad = getMajorTriad(chord)
+
+    const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, note) => {
+      if (note.note === majorTriad.root) {
+        acc.push({ ...note, scaleDegree: 1 })
+      }
+      return acc
+    }, [])
+
+    const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, note) => {
+      if (note.note === majorTriad.third) {
+        acc.push({ ...note, scaleDegree: 3 })
+      }
+      return acc
+    }, [])
+
+    const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, note) => {
+      if (note.note === majorTriad.fifth) {
+        acc.push({ ...note, scaleDegree: 5 })
+      }
+      return acc
+    }, [])
+
+    return {
+      chord,
+      inversion,
+      stringSet,
+      chordType,
+      notes: [...rootNotes, ...thirdNotes, ...fifthNotes],
     }
   }
 

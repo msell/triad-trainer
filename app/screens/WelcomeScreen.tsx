@@ -1,12 +1,12 @@
+import { Screen } from "@/components"
+import { Triad } from "@/components/Triad"
+import { $styles, ThemedStyle } from "@/theme"
+import { useAppTheme } from "@/utils/useAppTheme"
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { ViewStyle, View } from "react-native"
-import { Screen } from "@/components"
-import { AppStackScreenProps } from "../navigators"
-import { $styles, type ThemedStyle } from "@/theme"
+import { View, ViewStyle } from "react-native"
 
-import { useAppTheme } from "@/utils/useAppTheme"
-import { Triad } from "@/components/Triad"
+import { AppStackScreenProps } from "../navigators"
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
@@ -15,7 +15,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($container)}>
-        <Triad chord="C" chordType="major" inversion="firstInversion" stringset="2" />
+        <Triad chord="A" chordType="major" inversion="first" stringSet={1} />
       </View>
     </Screen>
   )

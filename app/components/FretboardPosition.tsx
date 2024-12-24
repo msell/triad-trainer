@@ -1,9 +1,10 @@
 import { colors, ThemedStyle } from "@/theme"
-import { NotePosition } from "@/types/CommonTypes"
+import { calculateFretRange } from "@/utils/calculateFretRange"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { Canvas, Group } from "@shopify/react-native-skia"
 import { useCallback } from "react"
 import { Dimensions, ViewStyle } from "react-native"
+import { Note as NoteType, StringSet, TriadNote } from "types/music.types"
 
 import { Fret } from "./Fret"
 import { GuitarString } from "./GuitarString"
@@ -22,33 +23,23 @@ const NUMBER_OF_FRETS = 4
 const LEFT_GUTTER = 28
 const TUNING = ["E", "A", "D", "G", "B", "e"]
 interface Props {
-  notes: NotePosition[]
-  inversion: "root" | "firstInversion" | "secondInversion"
-  stringset: "1" | "2" | "3" | "4"
-}
-
-function calculateStartingFret(notes: NotePosition[]): number {
-  if (!notes.length) return 1
-
-  // Find the minimum fret number from all notes
-  const minFret = Math.min(...notes.map((note) => note.fretNumber))
-
-  // Return one fret lower than the minimum, but not less than 0
-  return Math.max(1, minFret)
+  notes: TriadNote[]
+  stringset: StringSet
 }
 
 const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN + 3
 }
 
-export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
+export const FretboardPosition = ({ notes, stringset }: Props) => {
   const { themed } = useAppTheme()
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
 
-  const startingFret = calculateStartingFret(notes)
-
+  const fretRange = calculateFretRange(notes)
+  // console.tron.log({ fretRange, notes })
+  const startingFret = fretRange.minFret
   interface FretMarkerProps {
     fretNumber: number
     position: "left" | "right"
@@ -59,44 +50,10 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
     return <SkiaText x={x} y={y} text={fretNumber.toString()} fontSize={15} color={NUT_COLOR} />
   }
 
-  console.tron.log({
-    notes,
-    startingFret,
-  })
-  const getNoteDegree = (
-    inversion: "root" | "firstInversion" | "secondInversion",
-    string: number,
-    stringset: "1" | "2" | "3" | "4",
-  ) => {
-    // Stringset 1: strings 1,2,3
-    // Stringset 2: strings 2,3,4
-    // Stringset 3: strings 3,4,5
-    // Stringset 4: strings 4,5,6
-
-    const stringsetMappings = {
-      "1": [3, 2, 1],
-      "2": [4, 3, 2],
-      "3": [5, 4, 3],
-      "4": [6, 5, 4],
-    }
-
-    const currentStringset = stringsetMappings[stringset]
-    const positionInSet = currentStringset.indexOf(string)
-
-    if (positionInSet === -1) return null
-
-    const degreeMap = {
-      root: ["1", "3", "5"],
-      firstInversion: ["3", "5", "1"],
-      secondInversion: ["5", "1", "3"],
-    }
-
-    return degreeMap[inversion][positionInSet]
-  }
   const getNoteCoordinates = useCallback(
-    (note: NotePosition): { x: number; y: number } => {
-      const x = (NUM_STRINGS - note.stringNumber) * stringSpacing + LEFT_GUTTER
-      const y = fretOffsetY(note.fretNumber - startingFret + 1) - FRET_SPACING / 2
+    (note: NoteType): { x: number; y: number } => {
+      const x = (NUM_STRINGS - note.string) * stringSpacing + LEFT_GUTTER
+      const y = fretOffsetY(note.fret - startingFret + 1) - FRET_SPACING / 2
 
       return { x, y }
     },
@@ -136,21 +93,17 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
       )}
       {notes?.map((note) => (
         <Note
-          key={`${note.stringNumber}-${note.fretNumber}`}
+          key={`${note.string}-${note.fret}`}
           {...getNoteCoordinates(note)}
-          text={getNoteDegree(inversion, note.stringNumber, stringset) ?? ""}
+          text={note.scaleDegree.toString() ?? ""}
         />
       ))}
 
-      <FretMarker
-        y={90}
-        fretNumber={startingFret}
-        position={stringset === "4" ? "right" : "left"}
-      />
+      <FretMarker y={90} fretNumber={startingFret} position={stringset === 4 ? "right" : "left"} />
       <FretMarker
         y={290}
         fretNumber={startingFret + 2}
-        position={stringset === "4" ? "right" : "left"}
+        position={stringset === 4 ? "right" : "left"}
       />
       {/* <SkiaText x={21} y={90} text={startingFret.toString()} fontSize={15} color={NUT_COLOR} />
       <SkiaText

@@ -1,26 +1,31 @@
 import { Text } from "@/components"
-import data from "@/data/triads-keyof-c.json"
+import { getTriads } from "@/utils/getTriads"
 import { View } from "react-native"
+import { Chord, ChordType, Inversion, StringSet } from "types/music.types"
 
 import { FretboardPosition } from "./FretboardPosition"
 
 interface Props {
-  chord: "C"
-  chordType: "major" | "minor" | "diminished" | "augmented"
-  inversion: "root" | "firstInversion" | "secondInversion"
-  stringset: "1" | "2" | "3" | "4"
+  chord: Chord
+  chordType: ChordType
+  inversion: Inversion
+  stringSet: StringSet
 }
 
-export const Triad = ({ chord, chordType, inversion, stringset }: Props) => {
-  const notes = data[chord][chordType][inversion][stringset] as any
+export const Triad = ({ chord, chordType, inversion, stringSet }: Props) => {
+  const triads = getTriads({
+    chord,
+    chordType,
+    inversion,
+    stringSet,
+  })
 
   return (
     <View>
       <Text>{chord}</Text>
       <Text>{inversion}</Text>
-      <FretboardPosition notes={notes} inversion={inversion} stringset={stringset} />
-      <Text>{stringset}</Text>
-      <Text>{JSON.stringify(notes)}</Text>
+      <FretboardPosition notes={triads.notes} stringset={stringSet} />
+      <Text>{stringSet}</Text>
     </View>
   )
 }

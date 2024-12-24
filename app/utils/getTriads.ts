@@ -13,13 +13,26 @@ type Fretboard = {
 const standardFretboard: Fretboard = {
   tuning: "standard",
   strings: [
-    ["E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E"],
-    ["B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"],
-    ["G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G"],
-    ["D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db", "D"],
-    ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A"],
-    ["E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E"],
+    ["E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb"],
+    ["B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb"],
+    ["G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb"],
+    ["D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db"],
+    ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab"],
+    ["E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "C", "Db", "D", "Eb"],
   ],
+}
+
+const accidentalNotes: Record<string, string> = {
+  "Bb": "A#",
+  "Db": "C#",
+  "Eb": "D#",
+  "Gb": "F#",
+  "Ab": "G#",
+  "A#": "Bb",
+  "C#": "Db",
+  "D#": "Eb",
+  "F#": "Gb",
+  "G#": "Ab",
 }
 
 export type TriadQuery = {
@@ -35,9 +48,6 @@ export type Note = {
   string: number
   note: string
   altNote?: string // for example, Bb is a flat note, but it's also a sharp note
-  scaleDegree?: number
-  minFret?: number
-  maxFret?: number
 }
 
 export type TriadResult = TriadQuery & {
@@ -56,13 +66,31 @@ export const getStringNotes = ({
   tuning = "standard",
   minFret = 0,
   maxFret = 22,
-}: StringNotesInput) => {
-  if (!standardFretboard.tuning) {
+}: StringNotesInput): Note[] => {
+  const fretboard = standardFretboard
+
+  if (!fretboard.tuning) {
     throw new Error(`No fretboard found for tuning ${tuning}`)
   }
 
-  return standardFretboard.strings[string].slice(minFret, maxFret)
+  const stringNotes = fretboard.strings[string - 1]
+  const notes: Note[] = []
+
+  for (let fret = minFret; fret <= maxFret; fret++) {
+    const noteIndex = fret % stringNotes.length
+    const altNote = accidentalNotes[stringNotes[noteIndex]] || undefined
+    notes.push({
+      fret,
+      string,
+      note: stringNotes[noteIndex],
+      altNote,
+    })
+  }
+
+  console.log(notes)
+  return notes
 }
+
 export const getTriads = ({
   chord,
   inversion,

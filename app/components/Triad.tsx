@@ -20,6 +20,7 @@ export const Triad = ({ chord, chordType, inversion, stringset }: Props) => {
       <Text>{inversion}</Text>
       <FretboardPosition notes={notes} inversion={inversion} stringset={stringset} />
       <Text>{stringset}</Text>
+      <Text>{JSON.stringify(notes)}</Text>
     </View>
   )
 }

@@ -28,17 +28,17 @@ interface Props {
 }
 
 function calculateStartingFret(notes: NotePosition[]): number {
-  if (!notes.length) return 0
+  if (!notes.length) return 1
 
   // Find the minimum fret number from all notes
   const minFret = Math.min(...notes.map((note) => note.fretNumber))
 
   // Return one fret lower than the minimum, but not less than 0
-  return Math.max(0, minFret - 1)
+  return Math.max(1, minFret)
 }
 
 const fretOffsetY = (fretNumber: number) => {
-  return fretNumber * FRET_SPACING + TOP_MARGIN
+  return fretNumber * FRET_SPACING + TOP_MARGIN + 3
 }
 
 export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
@@ -49,6 +49,20 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
 
   const startingFret = calculateStartingFret(notes)
 
+  interface FretMarkerProps {
+    fretNumber: number
+    position: "left" | "right"
+    y: number
+  }
+  const FretMarker = ({ fretNumber, position, y }: FretMarkerProps) => {
+    const x = position === "left" ? 21 : exactWidth - 10
+    return <SkiaText x={x} y={y} text={fretNumber.toString()} fontSize={15} color={NUT_COLOR} />
+  }
+
+  console.tron.log({
+    notes,
+    startingFret,
+  })
   const getNoteDegree = (
     inversion: "root" | "firstInversion" | "secondInversion",
     string: number,
@@ -82,11 +96,11 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
   const getNoteCoordinates = useCallback(
     (note: NotePosition): { x: number; y: number } => {
       const x = (NUM_STRINGS - note.stringNumber) * stringSpacing + LEFT_GUTTER
-      const y = fretOffsetY(note.fretNumber - startingFret) - FRET_SPACING / 2
+      const y = fretOffsetY(note.fretNumber - startingFret + 1) - FRET_SPACING / 2
 
       return { x, y }
     },
-    [stringSpacing],
+    [startingFret, stringSpacing],
   )
 
   return (
@@ -117,7 +131,9 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
         ))}
       </Group>
 
-      <Nut width={exactWidth} verticalOffset={TOP_MARGIN} color={NUT_COLOR} />
+      {startingFret === 1 && (
+        <Nut width={exactWidth} verticalOffset={TOP_MARGIN} color={NUT_COLOR} />
+      )}
       {notes?.map((note) => (
         <Note
           key={`${note.stringNumber}-${note.fretNumber}`}
@@ -125,14 +141,25 @@ export const FretboardPosition = ({ notes, inversion, stringset }: Props) => {
           text={getNoteDegree(inversion, note.stringNumber, stringset) ?? ""}
         />
       ))}
-      <SkiaText x={17} y={90} text={startingFret.toString()} fontSize={30} color={NUT_COLOR} />
+
+      <FretMarker
+        y={90}
+        fretNumber={startingFret}
+        position={stringset === "4" ? "right" : "left"}
+      />
+      <FretMarker
+        y={290}
+        fretNumber={startingFret + 2}
+        position={stringset === "4" ? "right" : "left"}
+      />
+      {/* <SkiaText x={21} y={90} text={startingFret.toString()} fontSize={15} color={NUT_COLOR} />
       <SkiaText
-        x={17}
+        x={21}
         y={290}
         text={(startingFret + 2).toString()}
-        fontSize={30}
+        fontSize={15}
         color={NUT_COLOR}
-      />
+      /> */}
     </Canvas>
   )
 }

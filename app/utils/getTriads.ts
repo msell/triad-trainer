@@ -174,8 +174,11 @@ export const getTriads = ({
 
   const { bottomString, middleString, topString } = getStrings(stringSet)
   const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
+  console.tron.logImportant({ bottomStringNotes })
   const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
+  console.tron.logImportant({ middleStringNotes })
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
+  console.tron.logImportant({ topStringNotes })
   const majorTriad = getMajorTriad(chord)
 
   const flatTheNote = (note: Note, stringNumber: number) => {

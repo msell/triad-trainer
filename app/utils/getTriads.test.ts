@@ -70,4 +70,25 @@ describe("getTriads", () => {
       expect(result.notes).toContainEqual(expectedNote)
     })
   })
+
+  it("should return the correct notes for a D major second inversion 4th string", () => {
+    const result = getTriads({
+      chord: "D",
+      chordType: "major",
+      inversion: "second",
+      stringSet: 4,
+      minFret: 1,
+      maxFret: 13,
+    })
+    const expectedNotes = [
+      { fret: 5, note: "A", scaleDegree: 5, string: 6, altNote: undefined },
+      { fret: 5, note: "D", scaleDegree: 1, string: 5, altNote: undefined },
+      { fret: 4, note: "Gb", scaleDegree: 3, string: 4, altNote: undefined },
+    ]
+
+    // Check that each expected note is in the result
+    expectedNotes.forEach((expectedNote) => {
+      expect(result.notes).toContainEqual(expectedNote)
+    })
+  })
 })

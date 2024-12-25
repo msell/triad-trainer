@@ -18,6 +18,7 @@ export const Triad = ({ chord, chordType, inversion, stringSet }: Props) => {
     chordType,
     inversion,
     stringSet,
+    minFret: 1,
   })
 
   return (

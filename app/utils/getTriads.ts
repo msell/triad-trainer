@@ -254,6 +254,33 @@ export const getTriads = ({
     }, [])
   }
 
+  if (inversion === "second") {
+    fifthNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (chordType === "major") {
+        acc.push({ ...x, scaleDegree: 5 })
+      }
+      return acc
+    }, [])
+
+    rootNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.root) {
+        acc.push({ ...x, scaleDegree: 1 })
+      }
+      return acc
+    }, [])
+
+    thirdNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.third) {
+        if (chordType === "major") {
+          acc.push({ ...x, scaleDegree: 3 })
+        } else if (chordType === "minor") {
+          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
+        }
+      }
+      return acc
+    }, [])
+  }
+
   if (inversion === "first") {
     thirdNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
       if (x.note === majorTriad.third) {

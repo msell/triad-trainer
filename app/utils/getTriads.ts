@@ -48,60 +48,15 @@ export type TriadResult = TriadQuery & {
   notes: TriadNote[]
 }
 
-type StringNotesInput = {
-  string: number
-  tuning: Tunings
-  minFret: number
-  maxFret: number
-}
-
-type MajorTriad = {
-  root: string
-  third: string
-  fifth: string
-}
-
-const MajorScaleFormulaInSemitones = [0, 2, 4, 5, 7, 9, 11]
-
-interface StringSetDetails {
-  bottomString: number
-  middleString: number
-  topString: number
-}
-
-const getStrings = (stringSet: StringSet): StringSetDetails => {
-  switch (stringSet) {
-    case 1:
-      return {
-        bottomString: 3,
-        middleString: 2,
-        topString: 1,
-      }
-    case 2:
-      return {
-        bottomString: 4,
-        middleString: 3,
-        topString: 2,
-      }
-    case 3:
-      return {
-        bottomString: 5,
-        middleString: 4,
-        topString: 3,
-      }
-    case 4:
-      return {
-        bottomString: 6,
-        middleString: 5,
-        topString: 4,
-      }
-    default:
-      throw new Error(`Invalid string set ${stringSet}`)
-  }
+const ChordFormulas: Record<ChordType, number[]> = {
+  major: [0, 4, 7], // Root, Major 3rd, Perfect 5th
+  minor: [0, 3, 7], // Root, Minor 3rd, Perfect 5th
+  diminished: [0, 3, 6], // Root, Minor 3rd, Diminished 5th
+  augmented: [0, 4, 8], // Root, Major 3rd, Augmented 5th
 }
 
 const getNoteByInterval = (root: string, interval: number): string => {
-  const stringNotes = standardFretboard.strings[0] // Use any string, here the first string is used
+  const stringNotes = standardFretboard.strings[0]
   const rootIndex = stringNotes.indexOf(root)
 
   if (rootIndex === -1) {
@@ -112,30 +67,45 @@ const getNoteByInterval = (root: string, interval: number): string => {
   return stringNotes[targetIndex]
 }
 
-export const getThird = (root: string): string => {
-  const thirdInterval = MajorScaleFormulaInSemitones[2] // 4 semitones
-  return getNoteByInterval(root, thirdInterval)
-}
-
-export const getFifth = (root: string): string => {
-  const fifthInterval = MajorScaleFormulaInSemitones[4] // 7 semitones
-  return getNoteByInterval(root, fifthInterval)
-}
-
-export const getMajorTriad = (root: string): MajorTriad => {
+const getTriadNotes = (
+  root: string,
+  chordType: ChordType,
+): { root: string; third: string; fifth: string } => {
+  const formula = ChordFormulas[chordType]
   return {
     root,
-    third: getThird(root),
-    fifth: getFifth(root),
+    third: getNoteByInterval(root, formula[1]),
+    fifth: getNoteByInterval(root, formula[2]),
   }
 }
 
-export const getStringNotes = ({
+const applyInversion = (
+  triad: { root: string; third: string; fifth: string },
+  inversion: Inversion,
+): [keyof typeof triad, keyof typeof triad, keyof typeof triad] => {
+  switch (inversion) {
+    case "root":
+      return ["root", "third", "fifth"]
+    case "first":
+      return ["third", "fifth", "root"]
+    case "second":
+      return ["fifth", "root", "third"]
+    default:
+      throw new Error(`Invalid inversion: ${inversion}`)
+  }
+}
+
+const getStringNotes = ({
   string,
   tuning = "standard",
   minFret = 0,
   maxFret = 22,
-}: StringNotesInput): Note[] => {
+}: {
+  string: number
+  tuning?: Tunings
+  minFret?: number
+  maxFret?: number
+}): Note[] => {
   const fretboard = standardFretboard
 
   if (!fretboard.tuning) {
@@ -185,6 +155,7 @@ const getClosestTriad = (
 
   return closestTriad
 }
+
 export const getTriads = ({
   chord,
   inversion,
@@ -199,122 +170,49 @@ export const getTriads = ({
   }
 
   const { bottomString, middleString, topString } = getStrings(stringSet)
-  const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
-  const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
-  const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
+  const bottomNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
+  const middleNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
+  const topNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
 
-  const majorTriad = getMajorTriad(chord)
-  // if (__DEV__) {
-  //   console.tron.log("major triad", majorTriad)
-  // }
-  const flatTheNote = (note: Note, stringNumber: number) => {
-    const index = standardFretboard.strings[stringNumber - 1].indexOf(note.note)
+  const triad = getTriadNotes(chord, chordType)
+  const [bottomKey, middleKey, topKey] = applyInversion(triad, inversion)
 
-    if (index === 0) {
-      throw new Error(`Cannot flat the note ${note.note} on string ${stringNumber}`)
-    }
-    const newNote = {
-      ...note,
-      note: standardFretboard.strings[stringNumber - 1][index - 1],
-      fret: note.fret - 1,
-      altNote: accidentalNotes[standardFretboard.strings[stringNumber - 1][index - 1]],
-    }
+  const rootNotes = bottomNotes
+    .filter((note) => note.note === triad[bottomKey])
+    .map((note) => ({ ...note, scaleDegree: 1 }))
 
-    return newNote
-  }
+  const thirdNotes = middleNotes
+    .filter((note) => note.note === triad[middleKey])
+    .map((note) => ({ ...note, scaleDegree: 3 }))
 
-  let rootNotes: TriadNote[] = []
-  let thirdNotes: TriadNote[] = []
-  let fifthNotes: TriadNote[] = []
-
-  if (inversion === "root") {
-    rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-
-    thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-
-    fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-  }
-
-  if (inversion === "second") {
-    fifthNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-
-    rootNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-
-    thirdNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-  }
-
-  if (inversion === "first") {
-    thirdNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-
-    fifthNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-
-    rootNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-  }
+  const fifthNotes = topNotes
+    .filter((note) => note.note === triad[topKey])
+    .map((note) => ({ ...note, scaleDegree: 5 }))
 
   const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)
-  console.log(JSON.stringify(triadNotes, null, 2))
+
   return {
     chord,
     inversion,
     stringSet,
     chordType,
     notes: triadNotes,
+  }
+}
+
+const getStrings = (
+  stringSet: StringSet,
+): { bottomString: number; middleString: number; topString: number } => {
+  switch (stringSet) {
+    case 1:
+      return { bottomString: 3, middleString: 2, topString: 1 }
+    case 2:
+      return { bottomString: 4, middleString: 3, topString: 2 }
+    case 3:
+      return { bottomString: 5, middleString: 4, topString: 3 }
+    case 4:
+      return { bottomString: 6, middleString: 5, topString: 4 }
+    default:
+      throw new Error(`Invalid string set ${stringSet}`)
   }
 }

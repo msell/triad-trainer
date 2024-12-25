@@ -15,7 +15,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($container)}>
-        <Triad chord="D" chordType="major" inversion="second" stringSet={4} />
+        <Triad chord="Bb" chordType="diminished" inversion="root" stringSet={1} />
       </View>
     </Screen>
   )

@@ -204,7 +204,9 @@ export const getTriads = ({
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
 
   const majorTriad = getMajorTriad(chord)
-
+  // if (__DEV__) {
+  //   console.tron.log("major triad", majorTriad)
+  // }
   const flatTheNote = (note: Note, stringNumber: number) => {
     const index = standardFretboard.strings[stringNumber - 1].indexOf(note.note)
 
@@ -221,33 +223,66 @@ export const getTriads = ({
     return newNote
   }
 
-  const rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-    if (x.note === majorTriad.root) {
-      acc.push({ ...x, scaleDegree: 1 })
-    }
-    return acc
-  }, [])
+  let rootNotes: TriadNote[] = []
+  let thirdNotes: TriadNote[] = []
+  let fifthNotes: TriadNote[] = []
 
-  const thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-    if (x.note === majorTriad.third) {
-      if (chordType === "major") {
-        acc.push({ ...x, scaleDegree: 3 })
-      } else if (chordType === "minor") {
-        acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
+  if (inversion === "root") {
+    rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.root) {
+        acc.push({ ...x, scaleDegree: 1 })
       }
-    }
-    return acc
-  }, [])
+      return acc
+    }, [])
 
-  const fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-    if (x.note === majorTriad.fifth) {
-      acc.push({ ...x, scaleDegree: 5 })
-    }
-    return acc
-  }, [])
+    thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.third) {
+        if (chordType === "major") {
+          acc.push({ ...x, scaleDegree: 3 })
+        } else if (chordType === "minor") {
+          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
+        }
+      }
+      return acc
+    }, [])
+
+    fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.fifth) {
+        acc.push({ ...x, scaleDegree: 5 })
+      }
+      return acc
+    }, [])
+  }
+
+  if (inversion === "first") {
+    thirdNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.third) {
+        if (chordType === "major") {
+          acc.push({ ...x, scaleDegree: 3 })
+        } else if (chordType === "minor") {
+          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
+        }
+      }
+      return acc
+    }, [])
+
+    fifthNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.fifth) {
+        acc.push({ ...x, scaleDegree: 5 })
+      }
+      return acc
+    }, [])
+
+    rootNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === majorTriad.root) {
+        acc.push({ ...x, scaleDegree: 1 })
+      }
+      return acc
+    }, [])
+  }
 
   const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)
-
+  console.log(JSON.stringify(triadNotes, null, 2))
   return {
     chord,
     inversion,

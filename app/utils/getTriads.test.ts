@@ -1,5 +1,4 @@
 import { getStringNotes, getTriads } from "./getTriads"
-
 describe("getStringNotes", () => {
   it("should return the notes for the 1st string up to the 13th fret", () => {
     const result = getStringNotes({ string: 1, tuning: "standard", minFret: 0, maxFret: 13 })
@@ -50,5 +49,25 @@ describe("getTriads", () => {
       { fret: 12, string: 2, note: "B", scaleDegree: 3, altNote: undefined },
       { fret: 10, string: 1, note: "D", scaleDegree: 5, altNote: undefined },
     ])
+  })
+
+  it("should return the correct notes for a C major first inversion", () => {
+    const result = getTriads({
+      chord: "C",
+      chordType: "major",
+      inversion: "first",
+      stringSet: 1,
+      maxFret: 13,
+    })
+    const expectedNotes = [
+      { fret: 9, note: "E", scaleDegree: 3, string: 3, altNote: undefined },
+      { fret: 8, note: "G", scaleDegree: 5, string: 2, altNote: undefined },
+      { fret: 8, note: "C", scaleDegree: 1, string: 1, altNote: undefined },
+    ]
+
+    // Check that each expected note is in the result
+    expectedNotes.forEach((expectedNote) => {
+      expect(result.notes).toContainEqual(expectedNote)
+    })
   })
 })

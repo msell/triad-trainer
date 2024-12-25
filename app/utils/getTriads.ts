@@ -256,7 +256,7 @@ export const getTriads = ({
 
   if (inversion === "second") {
     fifthNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (chordType === "major") {
+      if (x.note === majorTriad.fifth) {
         acc.push({ ...x, scaleDegree: 5 })
       }
       return acc

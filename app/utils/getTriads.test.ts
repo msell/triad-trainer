@@ -83,7 +83,7 @@ describe("getTriads", () => {
     const expectedNotes = [
       { fret: 5, note: "A", scaleDegree: 5, string: 6, altNote: undefined },
       { fret: 5, note: "D", scaleDegree: 1, string: 5, altNote: undefined },
-      { fret: 4, note: "Gb", scaleDegree: 3, string: 4, altNote: undefined },
+      { fret: 4, note: "Gb", scaleDegree: 3, string: 4, altNote: "F#" },
     ]
 
     // Check that each expected note is in the result

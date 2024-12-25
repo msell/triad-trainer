@@ -159,6 +159,32 @@ export const getStringNotes = ({
   return notes
 }
 
+const getClosestTriad = (
+  rootNotes: TriadNote[],
+  thirdNotes: TriadNote[],
+  fifthNotes: TriadNote[],
+): TriadNote[] => {
+  let closestTriad: TriadNote[] = []
+  let smallestSpan = Infinity
+
+  for (const root of rootNotes) {
+    for (const third of thirdNotes) {
+      for (const fifth of fifthNotes) {
+        const frets = [root.fret, third.fret, fifth.fret]
+        const maxFret = Math.max(...frets)
+        const minFret = Math.min(...frets)
+        const span = maxFret - minFret
+
+        if (span < smallestSpan) {
+          smallestSpan = span
+          closestTriad = [root, third, fifth]
+        }
+      }
+    }
+  }
+
+  return closestTriad
+}
 export const getTriads = ({
   chord,
   inversion,
@@ -174,11 +200,9 @@ export const getTriads = ({
 
   const { bottomString, middleString, topString } = getStrings(stringSet)
   const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
-  console.tron.logImportant({ bottomStringNotes })
   const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
-  console.tron.logImportant({ middleStringNotes })
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
-  console.tron.logImportant({ topStringNotes })
+
   const majorTriad = getMajorTriad(chord)
 
   const flatTheNote = (note: Note, stringNumber: number) => {
@@ -222,11 +246,13 @@ export const getTriads = ({
     return acc
   }, [])
 
+  const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)
+
   return {
     chord,
     inversion,
     stringSet,
     chordType,
-    notes: [...rootNotes, ...thirdNotes, ...fifthNotes],
+    notes: triadNotes,
   }
 }

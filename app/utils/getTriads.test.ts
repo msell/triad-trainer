@@ -36,4 +36,19 @@ describe("getTriads", () => {
       { fret: 3, string: 1, note: "G", scaleDegree: 5, altNote: undefined },
     ])
   })
+
+  it("should return the correct notes for a G major root voicing", () => {
+    const result = getTriads({
+      chord: "G",
+      chordType: "major",
+      inversion: "root",
+      stringSet: 1,
+      maxFret: 16,
+    })
+    expect(result?.notes).toEqual([
+      { fret: 12, string: 3, note: "G", scaleDegree: 1, altNote: undefined },
+      { fret: 12, string: 2, note: "B", scaleDegree: 3, altNote: undefined },
+      { fret: 10, string: 1, note: "D", scaleDegree: 5, altNote: undefined },
+    ])
+  })
 })

@@ -1,0 +1,28 @@
+{
+  "C": {
+    "major": {
+      "root": {
+        "1": [
+          {
+            "stringNumber": 1,
+            "fretNumber": 3,
+            "note": "G",
+            "scaleDegree": 5
+          },
+          {
+            "stringNumber": 2,
+            "fretNumber": 3,
+            "note": "E",
+            "scaleDegree": 3
+          },
+          {
+            "stringNumber": 3,
+            "fretNumber": 5,
+            "note": "C",
+            "scaleDegree": 1
+          }
+        ]
+      }
+    }
+  }
+}

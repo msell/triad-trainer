@@ -29,11 +29,13 @@
     "prebuild:clean": "npx expo prebuild --clean"
   },
   "dependencies": {
+    "@expo-google-fonts/lilita-one": "^0.2.3",
     "@expo-google-fonts/space-grotesk": "^0.2.2",
     "@expo/metro-runtime": "~4.0.0",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.0.2",
     "@shopify/flash-list": "1.7.1",
+    "@shopify/react-native-skia": "1.5.0",
     "apisauce": "3.0.1",
     "date-fns": "^4.1.0",
     "expo": "~52.0.7",
@@ -52,6 +54,7 @@
     "react-i18next": "^15.0.1",
     "react-native": "0.76.5",
     "react-native-drawer-layout": "^4.0.1",
+    "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-keyboard-controller": "^1.12.7",
     "react-native-mmkv": "3.1.0",
@@ -93,5 +96,9 @@
   },
   "engines": {
     "node": "^18.18.0 || >=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msell/triad-trainer"
   }
 }

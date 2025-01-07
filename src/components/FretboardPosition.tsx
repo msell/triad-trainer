@@ -66,7 +66,7 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
     <Canvas style={[themed($canvas), { width: exactWidth }]}>
       <Group>
         {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
-          <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
+          <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} width={exactWidth} />
         ))}
       </Group>
 
@@ -114,7 +114,6 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
 
 const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
-  maxWidth: 400,
   height: HEIGHT,
   borderRadius: 10,
   boxShadow: `0 0 10px ${colors.palette.neutral400}`,

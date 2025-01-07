@@ -13,6 +13,7 @@ import { getTriads } from "@/utils/getTriads"
 import { FretboardPosition } from "@/components/FretboardPosition"
 import { makeImageFromView } from "@shopify/react-native-skia"
 import * as FileSystem from "expo-file-system"
+import Toast from "react-native-toast-message"
 
 export default function TriadScreen() {
   const { themed } = useAppTheme()
@@ -59,6 +60,11 @@ export default function TriadScreen() {
           // Use MediaLibrary to create an asset
           await MediaLibrary.createAssetAsync(filePath)
 
+          Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: "Image saved to camera roll",
+          })
           // Clean up temporary file
           await FileSystem.deleteAsync(filePath)
         } else {
@@ -66,9 +72,13 @@ export default function TriadScreen() {
         }
       } catch (error) {
         if (__DEV__) {
-          console.tron.log("error")
           console.tron.log(error)
         }
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to save image",
+        })
       }
     }
   }
@@ -209,6 +219,7 @@ export default function TriadScreen() {
           </View>
         </View>
       </View>
+      <Toast position="bottom" />
     </Screen>
   )
 }

@@ -4,19 +4,19 @@ import { $styles, colors, ThemedStyle } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
 import { useAppTheme } from "@/utils/useAppTheme"
 import * as MediaLibrary from "expo-media-library"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 import Picker from "react-native-dropdown-picker"
 import { chromaticScale } from "@/constants"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import { getTriads } from "@/utils/getTriads"
 import { FretboardPosition } from "@/components/FretboardPosition"
-import { useCanvasRef } from "@shopify/react-native-skia"
+import { makeImageFromView } from "@shopify/react-native-skia"
 import * as FileSystem from "expo-file-system"
 
 export default function TriadScreen() {
   const { themed } = useAppTheme()
-  const canvasRef = useCanvasRef()
+  const ref = useRef<View>(null)
   const [openChordTypeDD, setOpenChordTypeDD] = useState(false)
   const [openNote, setOpenNote] = useState(false)
   const [selectedChordType, setSelectedChordType] = useState<ChordType>("major")
@@ -34,28 +34,33 @@ export default function TriadScreen() {
   const [selectedNote, setSelectedNote] = useState<string>("A")
 
   const onSnapshot = async () => {
-    if (canvasRef.current) {
+    if (ref.current) {
       try {
-        const snapshot = canvasRef.current?.makeImageSnapshot()
-        const pngData = snapshot?.encodeToBytes()
-        if (pngData) {
+        const { status } = await MediaLibrary.requestPermissionsAsync()
+        if (status !== "granted") {
+          throw new Error("Permission to access media library was denied")
+        }
+        const snapshot = await makeImageFromView(ref)
+
+        const base64Image = snapshot?.encodeToBase64()
+        if (base64Image) {
           // Create a file path in the app's temporary directory
-          const filePath = `${FileSystem.cacheDirectory}snapshot.png`
+          const filePath = `${FileSystem.cacheDirectory}temp_image_${Date.now()}.png`
 
           if (__DEV__) {
             console.tron.log(filePath)
           }
+
           // Write the PNG data to the file
-          await FileSystem.writeAsStringAsync(filePath, Buffer.from(pngData).toString("base64"), {
+          await FileSystem.writeAsStringAsync(filePath, base64Image, {
             encoding: FileSystem.EncodingType.Base64,
           })
 
-          if (__DEV__) {
-            console.tron.log(`File saved to ${filePath}`)
-          }
-
           // Use MediaLibrary to create an asset
           await MediaLibrary.createAssetAsync(filePath)
+
+          // Clean up temporary file
+          await FileSystem.deleteAsync(filePath)
         } else {
           console.error("Failed to encode PNG data")
         }
@@ -71,9 +76,8 @@ export default function TriadScreen() {
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <View style={themed($container)}>
-        <View style={{ height: 500 }}>
+        <View ref={ref} collapsable={false}>
           <FretboardPosition
-            ref={canvasRef}
             notes={
               getTriads({
                 chord: selectedNote,
@@ -120,7 +124,7 @@ export default function TriadScreen() {
               />
             </View>
             <Button preset="default" onPress={onSnapshot}>
-              <MaterialIcons name="camera" color={colors.palette.secondary400} size={22} />
+              <MaterialIcons name="photo-camera" color={colors.palette.secondary400} size={22} />
             </Button>
           </View>
           <View style={themed($labeledRowContainer)}>

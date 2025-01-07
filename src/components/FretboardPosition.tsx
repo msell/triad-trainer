@@ -2,7 +2,7 @@ import { colors, ThemedStyle } from "@/theme"
 import { calculateFretRange } from "@/utils/calculateFretRange"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { Canvas, Group } from "@shopify/react-native-skia"
-import { forwardRef, useCallback } from "react"
+import { useCallback } from "react"
 import { Dimensions, ViewStyle } from "react-native"
 import { Note as NoteType, StringSet, TriadNote } from "@/types"
 
@@ -31,7 +31,7 @@ const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN + 3
 }
 
-export const FretboardPosition = forwardRef(({ notes, stringset }: Props, ref) => {
+export const FretboardPosition = ({ notes, stringset }: Props) => {
   const { themed } = useAppTheme()
 
   const screenWidth = Dimensions.get("window").width
@@ -63,7 +63,7 @@ export const FretboardPosition = forwardRef(({ notes, stringset }: Props, ref) =
   )
 
   return (
-    <Canvas ref={ref as any} style={[themed($canvas), { width: exactWidth }]}>
+    <Canvas style={[themed($canvas), { width: exactWidth }]}>
       <Group>
         {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
@@ -110,9 +110,7 @@ export const FretboardPosition = forwardRef(({ notes, stringset }: Props, ref) =
       />
     </Canvas>
   )
-})
-
-FretboardPosition.displayName = "FretboardPosition"
+}
 
 const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",

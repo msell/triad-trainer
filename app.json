@@ -14,9 +14,7 @@
     },
     "newArchEnabled": true,
     "jsEngine": "hermes",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
       "package": "com.atomicbytes.triadtrainer",
@@ -30,7 +28,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.atomicbytes.triadtrainer",
       "infoPlist": {
-        "NSPhotoLibraryAddUsageDescription": "This app requires access to the photo library to save images."
+        "NSPhotoLibraryAddUsageDescription": "This app requires access to the photo library to save images.",
+        "NSPhotoLibraryUsageDescription": "This app requires access to the photo library to save images."
       }
     },
     "web": {

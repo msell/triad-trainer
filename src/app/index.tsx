@@ -26,8 +26,8 @@ export default function TriadScreen() {
   const [chordTypes, setChordTypes] = useState<ChordType[]>([
     "major",
     "minor",
-    "diminished",
-    "augmented",
+    // "diminished",
+    // "augmented",
   ])
 
   const [selectedStringSet, setSelectedStringSet] = useState<StringSet>(1)

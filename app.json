@@ -28,7 +28,10 @@
     "ios": {
       "icon": "./assets/images/app-icon-ios.png",
       "supportsTablet": true,
-      "bundleIdentifier": "com.atomicbytes.triadtrainer"
+      "bundleIdentifier": "com.atomicbytes.triadtrainer",
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "This app requires access to the photo library to save images."
+      }
     },
     "web": {
       "favicon": "./assets/images/app-icon-web-favicon.png",
@@ -36,6 +39,13 @@
     },
     "plugins": [
       "expo-localization",
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "This app requires access to the photo library to save images.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
       "expo-font",
       [
         "expo-splash-screen",
@@ -51,6 +61,14 @@
     "experiments": {
       "tsconfigPaths": true,
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9d8e01ca-0bc0-4adf-97e4-e5a43fa9de32"
+      }
     }
   },
   "ignite": {

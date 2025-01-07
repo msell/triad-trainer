@@ -2,7 +2,7 @@ import { colors, ThemedStyle } from "@/theme"
 import { calculateFretRange } from "@/utils/calculateFretRange"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { Canvas, Group } from "@shopify/react-native-skia"
-import { useCallback } from "react"
+import { forwardRef, useCallback } from "react"
 import { Dimensions, ViewStyle } from "react-native"
 import { Note as NoteType, StringSet, TriadNote } from "@/types"
 
@@ -31,20 +31,22 @@ const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN + 3
 }
 
-export const FretboardPosition = ({ notes, stringset }: Props) => {
+export const FretboardPosition = forwardRef(({ notes, stringset }: Props, ref) => {
   const { themed } = useAppTheme()
+
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
 
   const fretRange = calculateFretRange(notes)
-  // console.tron.log({ fretRange, notes })
+
   const startingFret = fretRange.minFret
   interface FretMarkerProps {
     fretNumber: number
     position: "left" | "right"
     y: number
   }
+
   const FretMarker = ({ fretNumber, position, y }: FretMarkerProps) => {
     const x = position === "left" ? 21 : exactWidth - 10
     return <SkiaText x={x} y={y} text={fretNumber.toString()} fontSize={15} color={NUT_COLOR} />
@@ -61,7 +63,7 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
   )
 
   return (
-    <Canvas style={[themed($canvas), { width: exactWidth }]}>
+    <Canvas ref={ref as any} style={[themed($canvas), { width: exactWidth }]}>
       <Group>
         {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} />
@@ -106,17 +108,12 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
         fretNumber={startingFret + 2}
         position={stringset === 4 ? "right" : "left"}
       />
-      {/* <SkiaText x={21} y={90} text={startingFret.toString()} fontSize={15} color={NUT_COLOR} />
-      <SkiaText
-        x={21}
-        y={290}
-        text={(startingFret + 2).toString()}
-        fontSize={15}
-        color={NUT_COLOR}
-      /> */}
     </Canvas>
   )
-}
+})
+
+FretboardPosition.displayName = "FretboardPosition"
+
 const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
   maxWidth: 400,

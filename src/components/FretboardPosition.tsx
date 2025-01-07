@@ -96,6 +96,7 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
           key={`${note.string}-${note.fret}`}
           {...getNoteCoordinates(note)}
           text={note.scaleDegree === 1 ? "R" : (note.scaleDegree.toString() ?? "")}
+          pulse={note.scaleDegree === 1}
         />
       ))}
 

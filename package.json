@@ -48,6 +48,7 @@
     "expo-splash-screen": "~0.29.10",
     "expo-status-bar": "~2.0.0",
     "expo-system-ui": "~4.0.3",
+    "expo-updates": "~0.26.10",
     "i18next": "^23.14.0",
     "intl-pluralrules": "^2.0.1",
     "react": "18.3.1",

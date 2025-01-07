@@ -7,6 +7,7 @@ import { customFontsToLoad } from "@/theme"
 import { initI18n } from "@/i18n"
 import { loadDateFnsLocale } from "@/utils/formatDate"
 import { useThemeProvider } from "@/utils/useAppTheme"
+import { StatusBar } from "expo-status-bar"
 
 SplashScreen.preventAutoHideAsync()
 
@@ -51,6 +52,7 @@ export default function Root() {
       <KeyboardProvider>
         <Slot />
       </KeyboardProvider>
+      <StatusBar hidden />
     </ThemeProvider>
   )
 }

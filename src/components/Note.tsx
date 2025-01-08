@@ -24,7 +24,7 @@ export const Note = ({ x, y, text, pulse }: NoteProps) => {
 
   return (
     <Group>
-      <Circle cx={x} cy={y} r={outerRadius} color={borderColor} />
+      {pulse && <Circle cx={x} cy={y} r={outerRadius} color={borderColor} />}
       <Circle cx={x} cy={y} r={25} color={colors.palette.secondary500} />
       <Text
         x={x - metrics.width / 2}

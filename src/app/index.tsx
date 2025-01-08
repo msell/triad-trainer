@@ -1,18 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Button, Screen, Text } from "@/components"
+import { FretboardPosition } from "@/components/FretboardPosition"
+import { chromaticScale } from "@/constants"
 import { $styles, colors, ThemedStyle } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
+import { getTriads } from "@/utils/getTriads"
 import { useAppTheme } from "@/utils/useAppTheme"
+import MaterialIcons from "@expo/vector-icons/MaterialIcons"
+import { makeImageFromView } from "@shopify/react-native-skia"
+import * as FileSystem from "expo-file-system"
 import * as MediaLibrary from "expo-media-library"
 import { useRef, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 import Picker from "react-native-dropdown-picker"
-import { chromaticScale } from "@/constants"
-import MaterialIcons from "@expo/vector-icons/MaterialIcons"
-import { getTriads } from "@/utils/getTriads"
-import { FretboardPosition } from "@/components/FretboardPosition"
-import { makeImageFromView } from "@shopify/react-native-skia"
-import * as FileSystem from "expo-file-system"
 import Toast from "react-native-toast-message"
 
 export default function TriadScreen() {
@@ -88,6 +88,8 @@ export default function TriadScreen() {
       <View style={themed($container)}>
         <View ref={ref} collapsable={false}>
           <FretboardPosition
+            noteDisplay="scaleDegree"
+            pulseRoot={true}
             notes={
               getTriads({
                 chord: selectedNote,

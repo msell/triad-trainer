@@ -1,10 +1,10 @@
 import { colors, ThemedStyle } from "@/theme"
+import { Note as NoteType, StringSet, TriadNote } from "@/types"
 import { calculateFretRange } from "@/utils/calculateFretRange"
 import { useAppTheme } from "@/utils/useAppTheme"
 import { Canvas, Group } from "@shopify/react-native-skia"
 import { useCallback } from "react"
 import { Dimensions, ViewStyle } from "react-native"
-import { Note as NoteType, StringSet, TriadNote } from "@/types"
 
 import { Fret } from "./Fret"
 import { GuitarString } from "./GuitarString"
@@ -12,7 +12,7 @@ import { Note } from "./Note"
 import { Nut } from "./Nut"
 import { SkiaText } from "./SkiaText"
 
-const HEIGHT = 500
+const HEIGHT = 440
 const NUT_COLOR = colors.palette.secondary400
 const STRING_COLOR = colors.palette.secondary300
 const FRET_COLOR = colors.palette.neutral400
@@ -25,13 +25,20 @@ const TUNING = ["E", "A", "D", "G", "B", "e"]
 interface Props {
   notes: TriadNote[]
   stringset: StringSet
+  noteDisplay: "scaleDegree" | "noteName" | "none"
+  pulseRoot?: boolean
 }
 
 const fretOffsetY = (fretNumber: number) => {
   return fretNumber * FRET_SPACING + TOP_MARGIN + 3
 }
 
-export const FretboardPosition = ({ notes, stringset }: Props) => {
+export const FretboardPosition = ({
+  notes,
+  stringset,
+  noteDisplay = "noteName",
+  pulseRoot,
+}: Props) => {
   const { themed } = useAppTheme()
 
   const screenWidth = Dimensions.get("window").width
@@ -97,8 +104,14 @@ export const FretboardPosition = ({ notes, stringset }: Props) => {
         <Note
           key={`${note.string}-${note.fret}`}
           {...getNoteCoordinates(note)}
-          text={note.scaleDegree === 1 ? "R" : (note.scaleDegree.toString() ?? "")}
-          pulse={note.scaleDegree === 1}
+          text={
+            noteDisplay === "scaleDegree"
+              ? note.scaleDegree.toString()
+              : noteDisplay === "noteName"
+                ? note.note
+                : ""
+          }
+          pulse={pulseRoot && note.scaleDegree === 1}
         />
       ))}
 

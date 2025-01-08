@@ -7,12 +7,14 @@ import { ChordType, Inversion, StringSet } from "@/types"
 import { getTriads } from "@/utils/getTriads"
 import { useAppTheme } from "@/utils/useAppTheme"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet"
 import { makeImageFromView } from "@shopify/react-native-skia"
 import * as FileSystem from "expo-file-system"
 import * as MediaLibrary from "expo-media-library"
-import { useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 import Picker from "react-native-dropdown-picker"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Toast from "react-native-toast-message"
 
 export default function TriadScreen() {
@@ -33,7 +35,11 @@ export default function TriadScreen() {
   const [selectedStringSet, setSelectedStringSet] = useState<StringSet>(1)
   const [notes, setNotes] = useState<string[]>(chromaticScale)
   const [selectedNote, setSelectedNote] = useState<string>("A")
+  const bottomSheetRef = useRef<BottomSheet>(null)
 
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index)
+  }, [])
   const onSnapshot = async () => {
     if (ref.current) {
       try {
@@ -222,9 +228,26 @@ export default function TriadScreen() {
         </View>
       </View>
       <Toast position="bottom" />
+      <GestureHandlerRootView style={themed($bottomSheetContainer)}>
+        <BottomSheet ref={bottomSheetRef} onChange={handleSheetChanges}>
+          <BottomSheetView style={themed($bottomSheetContentContainer)}>
+            <Text>Awesome 🎉</Text>
+          </BottomSheetView>
+        </BottomSheet>
+      </GestureHandlerRootView>
     </Screen>
   )
 }
+const $bottomSheetContainer: ThemedStyle<ViewStyle> = () => ({
+  flex: 1,
+  backgroundColor: "grey",
+})
+
+const $bottomSheetContentContainer: ThemedStyle<ViewStyle> = () => ({
+  flex: 1,
+  padding: 36,
+  alignItems: "center",
+})
 
 const $label: ThemedStyle<TextStyle> = ({ spacing }) => ({
   fontSize: spacing.md,

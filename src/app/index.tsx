@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Button, Screen, Switch, Text } from "@/components"
 import { FretboardPosition } from "@/components/FretboardPosition"
+import GradientBackground from "@/components/GradientBackground"
 import { chromaticScale } from "@/constants"
 import { $styles, colors, ThemedStyle } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
@@ -10,7 +11,6 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet"
 import { makeImageFromView } from "@shopify/react-native-skia"
 import * as FileSystem from "expo-file-system"
-import { LinearGradient } from "expo-linear-gradient"
 import * as MediaLibrary from "expo-media-library"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
@@ -104,24 +104,7 @@ export default function TriadScreen() {
 
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
-      <LinearGradient
-        colors={[
-          "rgba(0, 68, 173, 1)", // hsl(219, 100%, 33%)
-          "rgba(0, 102, 204, 1)", // hsl(214, 100%, 38%)
-          "rgba(0, 122, 204, 1)", // hsl(209, 100%, 40%)
-          "rgba(0, 139, 209, 1)", // hsl(204, 100%, 41%)
-          "rgba(0, 153, 204, 1)", // hsl(197, 100%, 40%)
-          "rgba(0, 163, 194, 1)", // hsl(187, 100%, 38%)
-          "rgba(0, 189, 157, 1)", // hsl(174, 100%, 37%)
-          "rgba(0, 209, 105, 1)", // hsl(161, 100%, 41%)
-          "rgba(0, 224, 56, 1)", // hsl(149, 100%, 44%)
-          "rgba(26, 240, 0, 1)", // hsl(138, 100%, 47%)
-          "rgba(191, 255, 0, 1)", // hsl(87, 100%, 50%)
-        ]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }} // This creates the 45deg angle
-        style={$background}
-      />
+      <GradientBackground />
       <GestureHandlerRootView style={themed($bottomSheetContainer)}>
         <View style={themed($container)}>
           <View ref={ref} collapsable={false}>
@@ -412,10 +395,4 @@ const $notePickerWrapper: ThemedStyle<ViewStyle> = () => ({
   width: 100,
 })
 
-const $background: ViewStyle = {
-  position: "absolute",
-  left: 0,
-  right: 0,
-  top: 0,
-  bottom: 0,
-}
+

@@ -8,6 +8,7 @@ import {
   TriadNote,
   Tunings,
 } from "@/types"
+import { ImpossibleNoteError } from "./ImpossibleNoteError"
 
 const standardFretboard: Fretboard = {
   tuning: "standard",
@@ -185,6 +186,25 @@ const getClosestTriad = (
 
   return closestTriad
 }
+
+const flatTheNote = (note: Note, stringNumber: number): Note => {
+  if (note.fret === 0) {
+    throw new ImpossibleNoteError(`Cannot flat an open string note on string ${stringNumber}`)
+  }
+  return { ...note, fret: note.fret - 1 }
+}
+
+const tryFlatTheNote = (note: Note, stringNumber: number): Note | null => {
+  try {
+    return flatTheNote(note, stringNumber)
+  } catch (error) {
+    if (error instanceof ImpossibleNoteError) {
+      return null
+    }
+    throw error
+  }
+}
+
 export const getTriads = ({
   chord,
   inversion,
@@ -193,7 +213,7 @@ export const getTriads = ({
   minFret = 0,
   maxFret = 15,
   tuning = "standard",
-}: TriadQuery): TriadResult => {
+}: TriadQuery): TriadResult | null => {
   if (!standardFretboard.tuning) {
     throw new Error(`No fretboard found for tuning ${tuning}`)
   }
@@ -204,111 +224,86 @@ export const getTriads = ({
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
 
   const majorTriad = getMajorTriad(chord)
-  // if (__DEV__) {
-  //   console.tron.log("major triad", majorTriad)
-  // }
-  const flatTheNote = (note: Note, stringNumber: number) => {
-    const index = standardFretboard.strings[stringNumber - 1].indexOf(note.note)
-
-    if (index === 0) {
-      throw new Error(`Cannot flat the note ${note.note} on string ${stringNumber}`)
-    }
-    const newNote = {
-      ...note,
-      note: standardFretboard.strings[stringNumber - 1][index - 1],
-      fret: note.fret - 1,
-      altNote: accidentalNotes[standardFretboard.strings[stringNumber - 1][index - 1]],
-    }
-
-    return newNote
-  }
 
   let rootNotes: TriadNote[] = []
   let thirdNotes: TriadNote[] = []
   let fifthNotes: TriadNote[] = []
 
+  const processNotes = (
+    notes: Note[],
+    targetNote: string,
+    scaleDegree: number,
+    stringNumber: number,
+    flat: boolean = false,
+  ) => {
+    return notes.reduce<TriadNote[]>((acc, x) => {
+      if (x.note === targetNote) {
+        const note = flat ? tryFlatTheNote(x, stringNumber) : x
+        if (note) {
+          acc.push({ ...note, scaleDegree })
+        }
+      }
+      return acc
+    }, [])
+  }
+
   if (inversion === "root") {
-    rootNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-
-    thirdNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-
-    fifthNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-  }
-
-  if (inversion === "second") {
-    fifthNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-
-    rootNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
-
-    thirdNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-  }
-
-  if (inversion === "first") {
-    thirdNotes = bottomStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.third) {
-        if (chordType === "major") {
-          acc.push({ ...x, scaleDegree: 3 })
-        } else if (chordType === "minor") {
-          acc.push({ ...flatTheNote(x, middleString), scaleDegree: 3 })
-        }
-      }
-      return acc
-    }, [])
-
-    fifthNotes = middleStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.fifth) {
-        acc.push({ ...x, scaleDegree: 5 })
-      }
-      return acc
-    }, [])
-
-    rootNotes = topStringNotes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === majorTriad.root) {
-        acc.push({ ...x, scaleDegree: 1 })
-      }
-      return acc
-    }, [])
+    rootNotes = processNotes(bottomStringNotes, majorTriad.root, 1, bottomString)
+    thirdNotes = processNotes(
+      middleStringNotes,
+      majorTriad.third,
+      3,
+      middleString,
+      chordType !== "major",
+    )
+    fifthNotes = processNotes(
+      topStringNotes,
+      majorTriad.fifth,
+      5,
+      topString,
+      chordType === "diminished",
+    )
+  } else if (inversion === "first") {
+    thirdNotes = processNotes(
+      bottomStringNotes,
+      majorTriad.third,
+      3,
+      bottomString,
+      chordType !== "major",
+    )
+    fifthNotes = processNotes(
+      middleStringNotes,
+      majorTriad.fifth,
+      5,
+      middleString,
+      chordType === "diminished",
+    )
+    rootNotes = processNotes(topStringNotes, majorTriad.root, 1, topString)
+  } else if (inversion === "second") {
+    fifthNotes = processNotes(
+      bottomStringNotes,
+      majorTriad.fifth,
+      5,
+      bottomString,
+      chordType === "diminished",
+    )
+    rootNotes = processNotes(middleStringNotes, majorTriad.root, 1, middleString)
+    thirdNotes = processNotes(topStringNotes, majorTriad.third, 3, topString, chordType !== "major")
   }
 
   const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)
+
+  if (triadNotes.length !== 3) {
+    return null
+  }
+
+  if (__DEV__) {
+    console.tron.display({
+      name: `${chord}${chordType}`,
+      preview: `${inversion} inversion on string set ${stringSet}`,
+      value: triadNotes,
+    })
+  }
 
   return {
     chord,

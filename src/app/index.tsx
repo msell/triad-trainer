@@ -43,7 +43,7 @@ export default function TriadScreen() {
   const [chordTypes, setChordTypes] = useState<ChordType[]>([
     "major",
     "minor",
-    // "diminished",
+    "diminished",
     // "augmented",
   ])
 
@@ -394,5 +394,3 @@ const $notePickerWrapper: ThemedStyle<ViewStyle> = () => ({
   flexShrink: 1,
   width: 100,
 })
-
-

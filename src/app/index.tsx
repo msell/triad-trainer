@@ -11,7 +11,7 @@ import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@go
 import { makeImageFromView } from "@shopify/react-native-skia"
 import * as FileSystem from "expo-file-system"
 import * as MediaLibrary from "expo-media-library"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { TextStyle, View, ViewStyle } from "react-native"
 import Picker from "react-native-dropdown-picker"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
@@ -30,8 +30,10 @@ export default function TriadScreen() {
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
-  // callbacks
   const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present()
+  }, [])
+  useEffect(() => {
     bottomSheetModalRef.current?.present()
   }, [])
   const handleSheetChanges = useCallback((index: number) => {
@@ -97,6 +99,8 @@ export default function TriadScreen() {
     }
   }
 
+  const snapPoints = [330, 450]
+
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
       <GestureHandlerRootView style={themed($bottomSheetContainer)}>
@@ -121,7 +125,12 @@ export default function TriadScreen() {
         <Toast position="bottom" />
         <BottomSheetModalProvider>
           <Button onPress={handlePresentModalPress}>Open Controls</Button>
-          <BottomSheetModal ref={bottomSheetModalRef} onChange={handleSheetChanges}>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            onChange={handleSheetChanges}
+            snapPoints={snapPoints}
+            enablePanDownToClose
+          >
             <BottomSheetView style={themed($bottomSheetContentContainer)}>
               <View style={themed($row)}>
                 <View style={themed($notePickerWrapper)}>

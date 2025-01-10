@@ -54,10 +54,10 @@ export default function TriadScreen() {
   const onSnapshot = async () => {
     if (ref.current) {
       try {
-        // const { status } = await MediaLibrary.requestPermissionsAsync()
-        // if (status !== "granted") {
-        //   throw new Error("Permission to access media library was denied")
-        // }
+        const { status } = await MediaLibrary.requestPermissionsAsync(true, ["photo"])
+        if (status !== "granted") {
+          throw new Error("Permission to access media library was denied")
+        }
         const snapshot = await makeImageFromView(ref)
 
         const base64Image = snapshot?.encodeToBase64()

@@ -10,6 +10,7 @@ import { useAppTheme } from "@/utils/useAppTheme"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet"
 import { makeImageFromView } from "@shopify/react-native-skia"
+import { Audio } from "expo-av"
 import * as FileSystem from "expo-file-system"
 import * as MediaLibrary from "expo-media-library"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -28,7 +29,16 @@ export default function TriadScreen() {
   const [selectedChordType, setSelectedChordType] = useState<ChordType>("major")
   const [inversion, setInversion] = useState<Inversion>("root")
   const [noteDisplay, setNoteDisplay] = useState<NoteDisplay>("scaleDegree")
+  const [sound, setSound] = useState<Audio.Sound>()
 
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../../assets/sounds/camera-shutter.wav"),
+    )
+    setSound(sound)
+
+    await sound.playAsync()
+  }
   const bottomSheetModalRef = useRef<BottomSheetModal>(null)
 
   const handlePresentModalPress = useCallback(() => {
@@ -77,6 +87,7 @@ export default function TriadScreen() {
           // Use MediaLibrary to create an asset
           await MediaLibrary.createAssetAsync(filePath)
 
+          playSound()
           Toast.show({
             type: "success",
             text1: "Success",

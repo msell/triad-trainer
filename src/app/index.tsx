@@ -29,13 +29,11 @@ export default function TriadScreen() {
   const [selectedChordType, setSelectedChordType] = useState<ChordType>("major")
   const [inversion, setInversion] = useState<Inversion>("root")
   const [noteDisplay, setNoteDisplay] = useState<NoteDisplay>("scaleDegree")
-  const [sound, setSound] = useState<Audio.Sound>()
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
       require("../../assets/sounds/camera-shutter.wav"),
     )
-    setSound(sound)
 
     await sound.playAsync()
   }

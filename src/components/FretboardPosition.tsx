@@ -62,8 +62,11 @@ export const FretboardPosition = ({
   const getNoteCoordinates = useCallback(
     (note: NoteType): { x: number; y: number } => {
       const x = (NUM_STRINGS - note.string) * stringSpacing + LEFT_GUTTER
-      const y = fretOffsetY(note.fret - startingFret + 1) - FRET_SPACING / 2
+      let y = fretOffsetY(note.fret - startingFret + 1) - FRET_SPACING / 2
 
+      if (note.fret === 0) {
+        y = y + 26
+      }
       return { x, y }
     },
     [startingFret, stringSpacing],

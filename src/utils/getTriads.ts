@@ -205,6 +205,27 @@ const tryFlatTheNote = (note: Note, stringNumber: number): Note | null => {
   }
 }
 
+const sharpTheNote = (note: Note, stringNumber: number): Note => {
+  const maxFret = 22 // This should match your fretboard's max fret
+  if (note.fret >= maxFret) {
+    throw new ImpossibleNoteError(
+      `Cannot sharp note at fret ${note.fret} on string ${stringNumber} as it exceeds max fret`,
+    )
+  }
+  return { ...note, fret: note.fret + 1 }
+}
+
+const trySharpTheNote = (note: Note, stringNumber: number): Note | null => {
+  try {
+    return sharpTheNote(note, stringNumber)
+  } catch (error) {
+    if (error instanceof ImpossibleNoteError) {
+      return null
+    }
+    throw error
+  }
+}
+
 export const getTriads = ({
   chord,
   inversion,
@@ -235,13 +256,17 @@ export const getTriads = ({
     scaleDegree: number,
     stringNumber: number,
     flat: boolean = false,
+    alteration?: "sharp" | undefined,
   ) => {
     return notes.reduce<TriadNote[]>((acc, x) => {
       if (x.note === targetNote) {
-        const note = flat ? tryFlatTheNote(x, stringNumber) : x
-        if (note) {
-          acc.push({ ...note, scaleDegree })
+        let note = x
+        if (flat) {
+          note = tryFlatTheNote(x, stringNumber) || x
+        } else if (alteration === "sharp") {
+          note = trySharpTheNote(x, stringNumber) || x
         }
+        acc.push({ ...note, scaleDegree })
       }
       return acc
     }, [])
@@ -254,7 +279,7 @@ export const getTriads = ({
       majorTriad.third,
       3,
       middleString,
-      chordType !== "major",
+      chordType === "minor" || chordType === "diminished",
     )
     fifthNotes = processNotes(
       topStringNotes,
@@ -262,6 +287,7 @@ export const getTriads = ({
       5,
       topString,
       chordType === "diminished",
+      chordType === "augmented" ? "sharp" : undefined,
     )
   } else if (inversion === "first") {
     thirdNotes = processNotes(
@@ -269,7 +295,7 @@ export const getTriads = ({
       majorTriad.third,
       3,
       bottomString,
-      chordType !== "major",
+      chordType === "minor" || chordType === "diminished",
     )
     fifthNotes = processNotes(
       middleStringNotes,
@@ -277,6 +303,7 @@ export const getTriads = ({
       5,
       middleString,
       chordType === "diminished",
+      chordType === "augmented" ? "sharp" : undefined,
     )
     rootNotes = processNotes(topStringNotes, majorTriad.root, 1, topString)
   } else if (inversion === "second") {
@@ -286,9 +313,16 @@ export const getTriads = ({
       5,
       bottomString,
       chordType === "diminished",
+      chordType === "augmented" ? "sharp" : undefined,
     )
     rootNotes = processNotes(middleStringNotes, majorTriad.root, 1, middleString)
-    thirdNotes = processNotes(topStringNotes, majorTriad.third, 3, topString, chordType !== "major")
+    thirdNotes = processNotes(
+      topStringNotes,
+      majorTriad.third,
+      3,
+      topString,
+      chordType === "minor" || chordType === "diminished",
+    )
   }
 
   const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)

@@ -52,7 +52,7 @@ export default function TriadScreen() {
     "major",
     "minor",
     "diminished",
-    // "augmented",
+    "augmented",
   ])
 
   const [selectedStringSet, setSelectedStringSet] = useState<StringSet>(1)

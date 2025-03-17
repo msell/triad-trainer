@@ -1,4 +1,8 @@
 import { getStringNotes, getTriads } from "./getTriads"
+
+// Define __DEV__ for tests
+global.__DEV__ = false
+
 describe("getStringNotes", () => {
   it("should return the notes for the 1st string up to the 13th fret", () => {
     const result = getStringNotes({ string: 1, tuning: "standard", minFret: 0, maxFret: 13 })
@@ -29,7 +33,8 @@ describe("getTriads", () => {
       stringSet: 1,
       maxFret: 13,
     })
-    expect(result.notes).toEqual([
+    expect(result).not.toBeNull()
+    expect(result!.notes).toEqual([
       { fret: 5, string: 3, note: "C", scaleDegree: 1, altNote: undefined },
       { fret: 5, string: 2, note: "E", scaleDegree: 3, altNote: undefined },
       { fret: 3, string: 1, note: "G", scaleDegree: 5, altNote: undefined },
@@ -44,7 +49,8 @@ describe("getTriads", () => {
       stringSet: 1,
       maxFret: 16,
     })
-    expect(result?.notes).toEqual([
+    expect(result).not.toBeNull()
+    expect(result!.notes).toEqual([
       { fret: 12, string: 3, note: "G", scaleDegree: 1, altNote: undefined },
       { fret: 12, string: 2, note: "B", scaleDegree: 3, altNote: undefined },
       { fret: 10, string: 1, note: "D", scaleDegree: 5, altNote: undefined },
@@ -59,6 +65,7 @@ describe("getTriads", () => {
       stringSet: 1,
       maxFret: 13,
     })
+    expect(result).not.toBeNull()
     const expectedNotes = [
       { fret: 9, note: "E", scaleDegree: 3, string: 3, altNote: undefined },
       { fret: 8, note: "G", scaleDegree: 5, string: 2, altNote: undefined },
@@ -67,7 +74,7 @@ describe("getTriads", () => {
 
     // Check that each expected note is in the result
     expectedNotes.forEach((expectedNote) => {
-      expect(result.notes).toContainEqual(expectedNote)
+      expect(result!.notes).toContainEqual(expectedNote)
     })
   })
 
@@ -80,6 +87,7 @@ describe("getTriads", () => {
       minFret: 1,
       maxFret: 13,
     })
+    expect(result).not.toBeNull()
     const expectedNotes = [
       { fret: 5, note: "A", scaleDegree: 5, string: 6, altNote: undefined },
       { fret: 5, note: "D", scaleDegree: 1, string: 5, altNote: undefined },
@@ -88,7 +96,49 @@ describe("getTriads", () => {
 
     // Check that each expected note is in the result
     expectedNotes.forEach((expectedNote) => {
-      expect(result.notes).toContainEqual(expectedNote)
+      expect(result!.notes).toContainEqual(expectedNote)
+    })
+  })
+
+  it("should return the correct notes for a C augmented triad root position", () => {
+    const result = getTriads({
+      chord: "C",
+      chordType: "augmented",
+      inversion: "root",
+      stringSet: 1,
+      maxFret: 13,
+    })
+    expect(result).not.toBeNull()
+    const expectedNotes = [
+      { fret: 5, note: "C", scaleDegree: 1, string: 3, altNote: undefined },
+      { fret: 5, note: "E", scaleDegree: 3, string: 2, altNote: undefined },
+      { fret: 4, note: "Ab", scaleDegree: 5, string: 1, altNote: "G#" },
+    ]
+
+    // Check that each expected note is in the result
+    expectedNotes.forEach((expectedNote) => {
+      expect(result!.notes).toContainEqual(expectedNote)
+    })
+  })
+
+  it("should return the correct notes for an A augmented triad first inversion", () => {
+    const result = getTriads({
+      chord: "A",
+      chordType: "augmented",
+      inversion: "first",
+      stringSet: 1,
+      maxFret: 13,
+    })
+    expect(result).not.toBeNull()
+    const expectedNotes = [
+      { fret: 5, note: "Db", scaleDegree: 3, string: 3, altNote: "C#" },
+      { fret: 5, note: "F", scaleDegree: 5, string: 2, altNote: undefined },
+      { fret: 5, note: "A", scaleDegree: 1, string: 1, altNote: undefined },
+    ]
+
+    // Check that each expected note is in the result
+    expectedNotes.forEach((expectedNote) => {
+      expect(result!.notes).toContainEqual(expectedNote)
     })
   })
 })

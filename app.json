@@ -15,7 +15,9 @@
     },
     "newArchEnabled": true,
     "jsEngine": "hermes",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
       "package": "com.atomicbytes.triadtrainer",
@@ -32,7 +34,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.atomicbytes.triadtrainer",
       "infoPlist": {
-        "NSPhotoLibraryAddUsageDescription": "This app allows users to save screenshots of the fretboard to the camera roll."
+        "NSPhotoLibraryAddUsageDescription": "This app allows users to save screenshots of the fretboard to the camera roll.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "web": {

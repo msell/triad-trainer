@@ -8,6 +8,7 @@ import {
   TriadNote,
   Tunings,
 } from "@/types"
+
 import { ImpossibleNoteError } from "./ImpossibleNoteError"
 
 const standardFretboard: Fretboard = {
@@ -226,6 +227,163 @@ const trySharpTheNote = (note: Note, stringNumber: number): Note | null => {
   }
 }
 
+// Extract note processing logic into a separate function
+type ProcessNotesConfig = {
+  notes: Note[]
+  targetNote: string
+  scaleDegree: number
+  stringNumber: number
+  shouldFlat: boolean
+  shouldSharp?: boolean
+}
+
+const processNotes = ({
+  notes,
+  targetNote,
+  scaleDegree,
+  stringNumber,
+  shouldFlat,
+  shouldSharp,
+}: ProcessNotesConfig): TriadNote[] => {
+  return notes.reduce<TriadNote[]>((acc, note) => {
+    if (note.note === targetNote) {
+      let processedNote = note
+      if (shouldFlat) {
+        processedNote = tryFlatTheNote(note, stringNumber) || note
+      } else if (shouldSharp) {
+        processedNote = trySharpTheNote(note, stringNumber) || note
+      }
+      acc.push({ ...processedNote, scaleDegree })
+    }
+    return acc
+  }, [])
+}
+
+// Helper to determine note modifications based on chord type
+const getNoteModifications = (chordType: ChordType) => ({
+  shouldFlatThird: chordType === "minor" || chordType === "diminished",
+  shouldFlatFifth: chordType === "diminished",
+  shouldSharpFifth: chordType === "augmented",
+})
+
+// Process a specific inversion
+type ProcessInversionConfig = {
+  bottomStringNotes: Note[]
+  middleStringNotes: Note[]
+  topStringNotes: Note[]
+  majorTriad: MajorTriad
+  stringSet: StringSetDetails
+  chordType: ChordType
+}
+
+const processRootInversion = ({
+  bottomStringNotes,
+  middleStringNotes,
+  topStringNotes,
+  majorTriad,
+  stringSet,
+  chordType,
+}: ProcessInversionConfig) => {
+  const { shouldFlatThird, shouldFlatFifth, shouldSharpFifth } = getNoteModifications(chordType)
+
+  return {
+    rootNotes: processNotes({
+      notes: bottomStringNotes,
+      targetNote: majorTriad.root,
+      scaleDegree: 1,
+      stringNumber: stringSet.bottomString,
+      shouldFlat: false,
+    }),
+    thirdNotes: processNotes({
+      notes: middleStringNotes,
+      targetNote: majorTriad.third,
+      scaleDegree: 3,
+      stringNumber: stringSet.middleString,
+      shouldFlat: shouldFlatThird,
+    }),
+    fifthNotes: processNotes({
+      notes: topStringNotes,
+      targetNote: majorTriad.fifth,
+      scaleDegree: 5,
+      stringNumber: stringSet.topString,
+      shouldFlat: shouldFlatFifth,
+      shouldSharp: shouldSharpFifth,
+    }),
+  }
+}
+
+const processFirstInversion = ({
+  bottomStringNotes,
+  middleStringNotes,
+  topStringNotes,
+  majorTriad,
+  stringSet,
+  chordType,
+}: ProcessInversionConfig) => {
+  const { shouldFlatThird, shouldFlatFifth, shouldSharpFifth } = getNoteModifications(chordType)
+
+  return {
+    thirdNotes: processNotes({
+      notes: bottomStringNotes,
+      targetNote: majorTriad.third,
+      scaleDegree: 3,
+      stringNumber: stringSet.bottomString,
+      shouldFlat: shouldFlatThird,
+    }),
+    fifthNotes: processNotes({
+      notes: middleStringNotes,
+      targetNote: majorTriad.fifth,
+      scaleDegree: 5,
+      stringNumber: stringSet.middleString,
+      shouldFlat: shouldFlatFifth,
+      shouldSharp: shouldSharpFifth,
+    }),
+    rootNotes: processNotes({
+      notes: topStringNotes,
+      targetNote: majorTriad.root,
+      scaleDegree: 1,
+      stringNumber: stringSet.topString,
+      shouldFlat: false,
+    }),
+  }
+}
+
+const processSecondInversion = ({
+  bottomStringNotes,
+  middleStringNotes,
+  topStringNotes,
+  majorTriad,
+  stringSet,
+  chordType,
+}: ProcessInversionConfig) => {
+  const { shouldFlatThird, shouldFlatFifth, shouldSharpFifth } = getNoteModifications(chordType)
+
+  return {
+    fifthNotes: processNotes({
+      notes: bottomStringNotes,
+      targetNote: majorTriad.fifth,
+      scaleDegree: 5,
+      stringNumber: stringSet.bottomString,
+      shouldFlat: shouldFlatFifth,
+      shouldSharp: shouldSharpFifth,
+    }),
+    rootNotes: processNotes({
+      notes: middleStringNotes,
+      targetNote: majorTriad.root,
+      scaleDegree: 1,
+      stringNumber: stringSet.middleString,
+      shouldFlat: false,
+    }),
+    thirdNotes: processNotes({
+      notes: topStringNotes,
+      targetNote: majorTriad.third,
+      scaleDegree: 3,
+      stringNumber: stringSet.topString,
+      shouldFlat: shouldFlatThird,
+    }),
+  }
+}
+
 export const getTriads = ({
   chord,
   inversion,
@@ -239,93 +397,44 @@ export const getTriads = ({
     throw new Error(`No fretboard found for tuning ${tuning}`)
   }
 
-  const { bottomString, middleString, topString } = getStrings(stringSet)
+  const stringSetDetails = getStrings(stringSet)
+  const { bottomString, middleString, topString } = stringSetDetails
+
   const bottomStringNotes = getStringNotes({ string: bottomString, minFret, maxFret, tuning })
   const middleStringNotes = getStringNotes({ string: middleString, minFret, maxFret, tuning })
   const topStringNotes = getStringNotes({ string: topString, minFret, maxFret, tuning })
 
   const majorTriad = getMajorTriad(chord)
 
-  let rootNotes: TriadNote[] = []
-  let thirdNotes: TriadNote[] = []
-  let fifthNotes: TriadNote[] = []
-
-  const processNotes = (
-    notes: Note[],
-    targetNote: string,
-    scaleDegree: number,
-    stringNumber: number,
-    flat: boolean = false,
-    alteration?: "sharp" | undefined,
-  ) => {
-    return notes.reduce<TriadNote[]>((acc, x) => {
-      if (x.note === targetNote) {
-        let note = x
-        if (flat) {
-          note = tryFlatTheNote(x, stringNumber) || x
-        } else if (alteration === "sharp") {
-          note = trySharpTheNote(x, stringNumber) || x
-        }
-        acc.push({ ...note, scaleDegree })
-      }
-      return acc
-    }, [])
+  const inversionConfig = {
+    bottomStringNotes,
+    middleStringNotes,
+    topStringNotes,
+    majorTriad,
+    stringSet: stringSetDetails,
+    chordType,
   }
 
-  if (inversion === "root") {
-    rootNotes = processNotes(bottomStringNotes, majorTriad.root, 1, bottomString)
-    thirdNotes = processNotes(
-      middleStringNotes,
-      majorTriad.third,
-      3,
-      middleString,
-      chordType === "minor" || chordType === "diminished",
-    )
-    fifthNotes = processNotes(
-      topStringNotes,
-      majorTriad.fifth,
-      5,
-      topString,
-      chordType === "diminished",
-      chordType === "augmented" ? "sharp" : undefined,
-    )
-  } else if (inversion === "first") {
-    thirdNotes = processNotes(
-      bottomStringNotes,
-      majorTriad.third,
-      3,
-      bottomString,
-      chordType === "minor" || chordType === "diminished",
-    )
-    fifthNotes = processNotes(
-      middleStringNotes,
-      majorTriad.fifth,
-      5,
-      middleString,
-      chordType === "diminished",
-      chordType === "augmented" ? "sharp" : undefined,
-    )
-    rootNotes = processNotes(topStringNotes, majorTriad.root, 1, topString)
-  } else if (inversion === "second") {
-    fifthNotes = processNotes(
-      bottomStringNotes,
-      majorTriad.fifth,
-      5,
-      bottomString,
-      chordType === "diminished",
-      chordType === "augmented" ? "sharp" : undefined,
-    )
-    rootNotes = processNotes(middleStringNotes, majorTriad.root, 1, middleString)
-    thirdNotes = processNotes(
-      topStringNotes,
-      majorTriad.third,
-      3,
-      topString,
-      chordType === "minor" || chordType === "diminished",
-    )
+  let processedNotes
+  switch (inversion) {
+    case "root":
+      processedNotes = processRootInversion(inversionConfig)
+      break
+    case "first":
+      processedNotes = processFirstInversion(inversionConfig)
+      break
+    case "second":
+      processedNotes = processSecondInversion(inversionConfig)
+      break
+    default:
+      throw new Error(`Invalid inversion: ${inversion}`)
   }
 
-  const triadNotes = getClosestTriad(rootNotes, thirdNotes, fifthNotes)
+  const triadNotes = getClosestTriad(
+    processedNotes.rootNotes,
+    processedNotes.thirdNotes,
+    processedNotes.fifthNotes,
+  )
 
   if (triadNotes.length !== 3) {
     return null

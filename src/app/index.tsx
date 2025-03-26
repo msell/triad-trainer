@@ -2,7 +2,7 @@
 import { Button, Screen, Switch, Text } from "@/components"
 import { FretboardPosition } from "@/components/FretboardPosition"
 import GradientBackground from "@/components/GradientBackground"
-import { chromaticScale } from "@/constants"
+import NoteSelectionModal from "@/components/NoteSelectionModal"
 import { $styles, colors, ThemedStyle } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
 import { getTriads } from "@/utils/getTriads"
@@ -25,7 +25,7 @@ export default function TriadScreen() {
   const { themed } = useAppTheme()
   const ref = useRef<View>(null)
   const [openChordTypeDD, setOpenChordTypeDD] = useState(false)
-  const [openNote, setOpenNote] = useState(false)
+  const [isNoteModalVisible, setIsNoteModalVisible] = useState(false)
   const [selectedChordType, setSelectedChordType] = useState<ChordType>("major")
   const [inversion, setInversion] = useState<Inversion>("root")
   const [noteDisplay, setNoteDisplay] = useState<NoteDisplay>("scaleDegree")
@@ -56,7 +56,6 @@ export default function TriadScreen() {
   ])
 
   const [selectedStringSet, setSelectedStringSet] = useState<StringSet>(1)
-  const [notes, setNotes] = useState<string[]>(chromaticScale)
   const [selectedNote, setSelectedNote] = useState<string>("A")
   const [pulseRoot, setPulseRoot] = useState(true)
   const onSnapshot = async () => {
@@ -147,27 +146,14 @@ export default function TriadScreen() {
                 <View style={themed($notePickerWrapper)}>
                   <Button
                     preset="default"
+                    style={themed($selectedButton)}
+                    textStyle={themed($selectedButtonText)}
                     onPress={() => {
-                      setOpenNote(true)
+                      setIsNoteModalVisible(true)
                     }}
                   >
-                    <Text style={themed($heavyLabel)}>{selectedNote}</Text>
+                    {selectedNote}
                   </Button>
-                </View>
-                <View style={themed($notePickerWrapper)}>
-                  <Picker
-                    open={openNote}
-                    setOpen={setOpenNote}
-                    value={selectedNote}
-                    items={notes.map((chord) => ({ label: chord, value: chord }))}
-                    setValue={setSelectedNote}
-                    setItems={setNotes}
-                    labelStyle={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      color: colors.palette.secondary500,
-                    }}
-                  />
                 </View>
                 <View style={[themed($notePickerWrapper), { flexGrow: 1 }]}>
                   <Picker
@@ -341,6 +327,12 @@ export default function TriadScreen() {
           </BottomSheetModal>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      <NoteSelectionModal
+        isVisible={isNoteModalVisible}
+        onClose={() => setIsNoteModalVisible(false)}
+        selectedNote={selectedNote}
+        onNoteSelect={setSelectedNote}
+      />
     </Screen>
   )
 }

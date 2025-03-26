@@ -145,6 +145,16 @@ export default function TriadScreen() {
             <BottomSheetView style={themed($bottomSheetContentContainer)}>
               <View style={themed($row)}>
                 <View style={themed($notePickerWrapper)}>
+                  <Button
+                    preset="default"
+                    onPress={() => {
+                      setOpenNote(true)
+                    }}
+                  >
+                    <Text style={themed($heavyLabel)}>{selectedNote}</Text>
+                  </Button>
+                </View>
+                <View style={themed($notePickerWrapper)}>
                   <Picker
                     open={openNote}
                     setOpen={setOpenNote}
@@ -352,6 +362,11 @@ const $label: ThemedStyle<TextStyle> = ({ spacing }) => ({
   color: colors.palette.secondary500,
 })
 
+const $heavyLabel: ThemedStyle<TextStyle> = ({ colors }) => ({
+  fontSize: 20,
+  fontWeight: "bold",
+  color: colors.palette.secondary500,
+})
 const $container: ThemedStyle<ViewStyle> = () => ({
   flexGrow: 1,
   flexBasis: "70%",

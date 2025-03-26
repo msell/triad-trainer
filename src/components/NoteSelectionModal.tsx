@@ -64,12 +64,15 @@ const $modalOverlay: ThemedStyle<ViewStyle> = () => ({
 
 const $modalContent: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.neutral800,
+  flex: 1,
   width: "100%",
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-  paddingBottom: 20,
-  paddingLeft: 20,
-  paddingRight: 10,
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  elevation: 5,
+  zIndex: 1000,
 })
 
 const $title: ThemedStyle<TextStyle> = ({ colors }) => ({
@@ -85,6 +88,8 @@ const $titleContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   height: 60,
   justifyContent: "space-between",
   paddingHorizontal: spacing.md,
+  elevation: 6,
+  zIndex: 1001,
 })
 
 const $notesGrid: ThemedStyle<ViewStyle> = ({ spacing }) => ({

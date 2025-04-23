@@ -440,14 +440,6 @@ export const getTriads = ({
     return null
   }
 
-  if (__DEV__) {
-    console.tron.display({
-      name: `${chord}${chordType}`,
-      preview: `${inversion} inversion on string set ${stringSet}`,
-      value: triadNotes,
-    })
-  }
-
   return {
     chord,
     inversion,

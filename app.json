@@ -13,7 +13,7 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/9d8e01ca-0bc0-4adf-97e4-e5a43fa9de32"
     },
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "jsEngine": "hermes",
     "assetBundlePatterns": ["**/*"],
     "android": {

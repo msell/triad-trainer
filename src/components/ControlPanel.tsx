@@ -1,11 +1,12 @@
 import { FC, Dispatch, SetStateAction } from "react"
-import { View, StyleSheet, ScrollView } from "react-native"
+import { View, StyleSheet, ScrollView, useColorScheme } from "react-native"
 import { Button, Text, Switch } from "@/components"
-import { colors } from "@/theme"
+import { colors, colorsDark } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
 import { NoteDisplay } from "@/app"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 import Picker from "react-native-dropdown-picker"
+import { useAppTheme } from "@/utils/useAppTheme"
 
 interface ControlPanelProps {
   selectedNote: string
@@ -46,14 +47,30 @@ const ControlPanel: FC<ControlPanelProps> = ({
   onNotePress,
   onSnapshot,
 }) => {
+  const colorScheme = useColorScheme()
+  const isDarkMode = colorScheme === "dark"
+  const { theme } = useAppTheme()
+
+  // Select the appropriate color palette based on the theme
+  const palette = isDarkMode ? colorsDark.palette : colors.palette
+
+  // Define high contrast colors for dark mode
+  const buttonBgColor = isDarkMode ? palette.neutral300 : palette.neutral100
+  const buttonBorderColor = isDarkMode ? palette.secondary200 : palette.secondary300
+  const selectedBgColor = isDarkMode ? palette.secondary200 : palette.secondary500
+  const selectedTextColor = isDarkMode ? palette.neutral900 : palette.neutral100
+  const textColor = isDarkMode ? palette.neutral900 : palette.secondary500
+  const containerBgColor = isDarkMode ? palette.neutral400 : palette.neutral200
+  const iconColor = isDarkMode ? palette.secondary200 : palette.secondary400
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: containerBgColor }]}>
       {/* Top row with chord selection and camera button */}
       <View style={styles.topRow}>
         <Button
           preset="default"
-          style={styles.noteButton}
-          textStyle={styles.noteButtonText}
+          style={[styles.noteButton, { backgroundColor: selectedBgColor }]}
+          textStyle={[styles.noteButtonText, { color: selectedTextColor }]}
           onPress={onNotePress}
         >
           {selectedNote}
@@ -66,27 +83,42 @@ const ControlPanel: FC<ControlPanelProps> = ({
             items={chordTypes.map((chordType) => ({ label: chordType, value: chordType }))}
             setValue={setSelectedChordType}
             setItems={setChordTypes}
-            style={styles.picker}
-            labelStyle={styles.pickerLabel}
-            dropDownContainerStyle={styles.dropDownContainer}
+            style={[
+              styles.picker,
+              { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+            ]}
+            labelStyle={[styles.pickerLabel, { color: textColor }]}
+            dropDownContainerStyle={[
+              styles.dropDownContainer,
+              { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+            ]}
+            textStyle={{ color: textColor }}
           />
         </View>
-        <Button preset="default" style={styles.cameraButton} onPress={onSnapshot}>
-          <MaterialIcons name="photo-camera" color={colors.palette.secondary400} size={24} />
+        <Button
+          preset="default"
+          style={[
+            styles.cameraButton,
+            { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+          ]}
+          onPress={onSnapshot}
+        >
+          <MaterialIcons name="photo-camera" color={iconColor} size={24} />
         </Button>
       </View>
 
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
         {/* Inversion controls */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Inversion</Text>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>Inversion</Text>
           <View style={styles.buttonRow}>
             <Button
               style={[
                 styles.button,
-                inversion === "root" ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                inversion === "root" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={inversion === "root" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={inversion === "root" ? { color: selectedTextColor } : { color: textColor }}
               preset="default"
               onPress={() => setInversion("root")}
             >
@@ -95,9 +127,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                inversion === "first" ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                inversion === "first" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={inversion === "first" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                inversion === "first" ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setInversion("first")}
             >
@@ -106,9 +141,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                inversion === "second" ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                inversion === "second" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={inversion === "second" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                inversion === "second" ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setInversion("second")}
             >
@@ -119,14 +157,17 @@ const ControlPanel: FC<ControlPanelProps> = ({
 
         {/* String Set controls */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>String Set</Text>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>String Set</Text>
           <View style={styles.buttonRow}>
             <Button
               style={[
                 styles.button,
-                selectedStringSet === 4 ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                selectedStringSet === 4 ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={selectedStringSet === 4 ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                selectedStringSet === 4 ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setSelectedStringSet(4)}
             >
@@ -135,9 +176,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                selectedStringSet === 3 ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                selectedStringSet === 3 ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={selectedStringSet === 3 ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                selectedStringSet === 3 ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setSelectedStringSet(3)}
             >
@@ -146,9 +190,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                selectedStringSet === 2 ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                selectedStringSet === 2 ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={selectedStringSet === 2 ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                selectedStringSet === 2 ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setSelectedStringSet(2)}
             >
@@ -157,9 +204,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                selectedStringSet === 1 ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                selectedStringSet === 1 ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={selectedStringSet === 1 ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                selectedStringSet === 1 ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setSelectedStringSet(1)}
             >
@@ -170,16 +220,17 @@ const ControlPanel: FC<ControlPanelProps> = ({
 
         {/* Note Display controls */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Note Display</Text>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>Note Display</Text>
           <View style={styles.buttonRow}>
             <Button
               style={[
                 styles.button,
-                noteDisplay === "scaleDegree"
-                  ? { backgroundColor: colors.palette.secondary500 }
-                  : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                noteDisplay === "scaleDegree" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={noteDisplay === "scaleDegree" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                noteDisplay === "scaleDegree" ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setNoteDisplay("scaleDegree")}
             >
@@ -188,9 +239,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                noteDisplay === "noteName" ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                noteDisplay === "noteName" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={noteDisplay === "noteName" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                noteDisplay === "noteName" ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setNoteDisplay("noteName")}
             >
@@ -199,9 +253,12 @@ const ControlPanel: FC<ControlPanelProps> = ({
             <Button
               style={[
                 styles.button,
-                noteDisplay === "none" ? { backgroundColor: colors.palette.secondary500 } : {},
+                { backgroundColor: buttonBgColor, borderColor: buttonBorderColor },
+                noteDisplay === "none" ? { backgroundColor: selectedBgColor } : {},
               ]}
-              textStyle={noteDisplay === "none" ? { color: colors.palette.neutral100 } : {}}
+              textStyle={
+                noteDisplay === "none" ? { color: selectedTextColor } : { color: textColor }
+              }
               preset="default"
               onPress={() => setNoteDisplay("none")}
             >
@@ -212,7 +269,7 @@ const ControlPanel: FC<ControlPanelProps> = ({
 
         {/* Pulse Root toggle */}
         <View style={styles.switchRow}>
-          <Text style={styles.sectionTitle}>Pulse Root</Text>
+          <Text style={[styles.sectionTitle, { color: textColor }]}>Pulse Root</Text>
           <Switch value={pulseRoot} onValueChange={setPulseRoot} />
         </View>
       </ScrollView>
@@ -222,8 +279,6 @@ const ControlPanel: FC<ControlPanelProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: colors.palette.neutral100,
-    borderColor: colors.palette.secondary300,
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
@@ -237,45 +292,38 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     alignItems: "center",
-    backgroundColor: colors.palette.neutral100,
-    borderColor: colors.palette.secondary300,
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
   },
   container: {
-    backgroundColor: colors.palette.neutral200,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 5,
     paddingBottom: 24,
     paddingHorizontal: 16,
     paddingTop: 16,
-    shadowColor: colors.palette.neutral800,
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
   dropDownContainer: {
-    backgroundColor: colors.palette.neutral100,
-    borderColor: colors.palette.secondary300,
+    borderWidth: 1,
   },
   noteButton: {
     alignItems: "center",
-    backgroundColor: colors.palette.secondary500,
     borderRadius: 8,
     height: 44,
     justifyContent: "center",
     width: 60,
   },
   noteButtonText: {
-    color: colors.palette.neutral100,
     fontSize: 18,
+    fontWeight: "bold",
   },
   picker: {
-    backgroundColor: colors.palette.neutral100,
-    borderColor: colors.palette.secondary300,
     borderRadius: 8,
+    borderWidth: 1,
     minHeight: 44,
   },
   pickerContainer: {
@@ -283,7 +331,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   pickerLabel: {
-    color: colors.palette.secondary500,
     fontSize: 16,
     fontWeight: "600",
   },
@@ -297,7 +344,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    color: colors.palette.secondary500,
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 8,

@@ -17,6 +17,11 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
 
   return {
     ...config,
-    plugins: [...existingPlugins, require("./plugins/withSplashScreen").withSplashScreen],
+    plugins: [
+      ...existingPlugins,
+      // Required for SDK 54 best compatibility (and used by eas builds).
+      "expo-build-properties",
+      require("./plugins/withSplashScreen").withSplashScreen,
+    ],
   }
 }

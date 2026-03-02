@@ -192,7 +192,14 @@ const flatTheNote = (note: Note, stringNumber: number): Note => {
   if (note.fret === 0) {
     throw new ImpossibleNoteError(`Cannot flat an open string note on string ${stringNumber}`)
   }
-  return { ...note, fret: note.fret - 1 }
+
+  const fret = note.fret - 1
+  const stringNotes = standardFretboard.strings[stringNumber - 1]
+  const noteIndex = fret % stringNotes.length
+  const newNote = stringNotes[noteIndex]
+  const altNote = accidentalNotes[newNote] || undefined
+
+  return { ...note, fret, note: newNote, altNote }
 }
 
 const tryFlatTheNote = (note: Note, stringNumber: number): Note | null => {
@@ -213,7 +220,14 @@ const sharpTheNote = (note: Note, stringNumber: number): Note => {
       `Cannot sharp note at fret ${note.fret} on string ${stringNumber} as it exceeds max fret`,
     )
   }
-  return { ...note, fret: note.fret + 1 }
+
+  const fret = note.fret + 1
+  const stringNotes = standardFretboard.strings[stringNumber - 1]
+  const noteIndex = fret % stringNotes.length
+  const newNote = stringNotes[noteIndex]
+  const altNote = accidentalNotes[newNote] || undefined
+
+  return { ...note, fret, note: newNote, altNote }
 }
 
 const trySharpTheNote = (note: Note, stringNumber: number): Note | null => {

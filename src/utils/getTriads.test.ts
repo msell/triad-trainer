@@ -1,7 +1,7 @@
 import { getStringNotes, getTriads } from "./getTriads"
 
 // Define __DEV__ for tests
-global.__DEV__ = false
+;(global as any).__DEV__ = false
 
 describe("getStringNotes", () => {
   it("should return the notes for the 1st string up to the 13th fret", () => {
@@ -131,8 +131,8 @@ describe("getTriads", () => {
     })
     expect(result).not.toBeNull()
     const expectedNotes = [
-      { fret: 5, note: "Db", scaleDegree: 3, string: 3, altNote: "C#" },
-      { fret: 5, note: "F", scaleDegree: 5, string: 2, altNote: undefined },
+      { fret: 6, note: "Db", scaleDegree: 3, string: 3, altNote: "C#" },
+      { fret: 6, note: "F", scaleDegree: 5, string: 2, altNote: undefined },
       { fret: 5, note: "A", scaleDegree: 1, string: 1, altNote: undefined },
     ]
 

@@ -1,9 +1,9 @@
-// we always make sure 'react-native' gets included first
-import * as ReactNative from "react-native"
 import mockFile from "./mockFile"
 
 // libraries to mock
 jest.doMock("react-native", () => {
+  const ReactNative = jest.requireActual("react-native")
+
   // Extend ReactNative
   return Object.setPrototypeOf(
     {
@@ -37,6 +37,31 @@ jest.mock("expo-localization", () => ({
   ...jest.requireActual("expo-localization"),
   getLocales: () => [{ languageTag: "en-US", textDirection: "ltr" }],
 }))
+
+// MMKV requires native TurboModules; mock for unit tests.
+jest.mock("react-native-mmkv", () => {
+  class MMKV {
+    private store: Record<string, string> = {}
+
+    set(key: string, value: string) {
+      this.store[key] = value
+    }
+
+    getString(key: string) {
+      return this.store[key] ?? undefined
+    }
+
+    delete(key: string) {
+      delete this.store[key]
+    }
+
+    clearAll() {
+      this.store = {}
+    }
+  }
+
+  return { MMKV }
+})
 
 jest.mock("../src/i18n/i18n.ts", () => ({
   i18n: {

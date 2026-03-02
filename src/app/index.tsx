@@ -76,7 +76,7 @@ export default function TriadScreen() {
         const base64Image = snapshot?.encodeToBase64()
         if (base64Image) {
           // Create a file path in the app's temporary directory
-          const filePath = `${FileSystem.cacheDirectory}temp_image_${Date.now()}.png`
+          const filePath = `${FileSystem.Paths.cache.uri}temp_image_${Date.now()}.png`
 
           if (__DEV__) {
             console.tron.log(filePath)
@@ -84,7 +84,7 @@ export default function TriadScreen() {
 
           // Write the PNG data to the file
           await FileSystem.writeAsStringAsync(filePath, base64Image, {
-            encoding: FileSystem.EncodingType.Base64,
+            encoding: 'base64',
           })
 
           // Use MediaLibrary to create an asset

@@ -12,25 +12,22 @@ import { Note } from "./Note"
 import { Nut } from "./Nut"
 import { SkiaText } from "./SkiaText"
 
-const HEIGHT = 440
+const DEFAULT_HEIGHT = 440
 const NUT_COLOR = colors.palette.secondary400
 const STRING_COLOR = colors.palette.secondary300
 const FRET_COLOR = colors.palette.neutral400
 const NUM_STRINGS = 6
 const TOP_MARGIN = 46
-const FRET_SPACING = 100
 const NUMBER_OF_FRETS = 4
 const LEFT_GUTTER = 28
 const TUNING = ["E", "A", "D", "G", "B", "e"]
+
 interface Props {
   notes: TriadNote[]
   stringset: StringSet
   noteDisplay: "scaleDegree" | "noteName" | "none"
   pulseRoot?: boolean
-}
-
-const fretOffsetY = (fretNumber: number) => {
-  return fretNumber * FRET_SPACING + TOP_MARGIN + 3
+  height?: number
 }
 
 export const FretboardPosition = ({
@@ -38,16 +35,24 @@ export const FretboardPosition = ({
   stringset,
   noteDisplay = "noteName",
   pulseRoot,
+  height = DEFAULT_HEIGHT,
 }: Props) => {
   const { themed } = useAppTheme()
+
+  const fretSpacing = (height - TOP_MARGIN) / NUMBER_OF_FRETS
 
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
 
   const fretRange = calculateFretRange(notes)
-
   const startingFret = fretRange.minFret
+
+  const fretOffsetY = useCallback(
+    (fretNumber: number) => fretNumber * fretSpacing + TOP_MARGIN + 3,
+    [fretSpacing],
+  )
+
   interface FretMarkerProps {
     fretNumber: number
     position: "left" | "right"
@@ -62,18 +67,21 @@ export const FretboardPosition = ({
   const getNoteCoordinates = useCallback(
     (note: NoteType): { x: number; y: number } => {
       const x = (NUM_STRINGS - note.string) * stringSpacing + LEFT_GUTTER
-      let y = fretOffsetY(note.fret - startingFret + 1) - FRET_SPACING / 2
+      let y = fretOffsetY(note.fret - startingFret + 1) - fretSpacing / 2
 
       if (note.fret === 0) {
         y = y + 26
       }
       return { x, y }
     },
-    [startingFret, stringSpacing],
+    [startingFret, stringSpacing, fretOffsetY, fretSpacing],
   )
 
+  const fretMarkerY1 = fretOffsetY(1) - fretSpacing / 2 + 10
+  const fretMarkerY2 = fretOffsetY(3) - fretSpacing / 2 + 10
+
   return (
-    <Canvas style={[themed($canvas), { width: exactWidth }]}>
+    <Canvas style={[themed($canvas), { width: exactWidth, height }]}>
       <Group>
         {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} width={exactWidth} />
@@ -94,7 +102,7 @@ export const FretboardPosition = ({
               offset={stringSpacing * index}
               index={index + 1}
               color={STRING_COLOR}
-              height={HEIGHT}
+              height={height}
             />
           </Group>
         ))}
@@ -118,9 +126,13 @@ export const FretboardPosition = ({
         />
       ))}
 
-      <FretMarker y={90} fretNumber={startingFret} position={stringset === 4 ? "right" : "left"} />
       <FretMarker
-        y={290}
+        y={fretMarkerY1}
+        fretNumber={startingFret}
+        position={stringset === 4 ? "right" : "left"}
+      />
+      <FretMarker
+        y={fretMarkerY2}
         fretNumber={startingFret + 2}
         position={stringset === 4 ? "right" : "left"}
       />
@@ -130,7 +142,6 @@ export const FretboardPosition = ({
 
 const $canvas: ThemedStyle<ViewStyle> = () => ({
   width: "95%",
-  height: HEIGHT,
   borderRadius: 10,
   boxShadow: `0 0 10px ${colors.palette.neutral400}`,
   backgroundColor: colors.palette.neutral100,

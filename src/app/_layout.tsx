@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Slot, SplashScreen } from "expo-router"
+import { ThemeProvider as NavThemeProvider } from "@react-navigation/native"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 
 import { useFonts } from "@expo-google-fonts/space-grotesk"
@@ -23,7 +24,7 @@ export { ErrorBoundary } from "@/components/ErrorBoundary/ErrorBoundary"
 export default function Root() {
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad)
   const [isI18nInitialized, setIsI18nInitialized] = useState(false)
-  const { themeScheme, setThemeContextOverride, ThemeProvider } = useThemeProvider()
+  const { themeScheme, navigationTheme, setThemeContextOverride, ThemeProvider } = useThemeProvider()
 
   useEffect(() => {
     initI18n()
@@ -49,10 +50,12 @@ export default function Root() {
 
   return (
     <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
-      <KeyboardProvider>
-        <Slot />
-      </KeyboardProvider>
-      <StatusBar hidden />
+      <NavThemeProvider value={navigationTheme}>
+        <KeyboardProvider>
+          <Slot />
+        </KeyboardProvider>
+        <StatusBar hidden />
+      </NavThemeProvider>
     </ThemeProvider>
   )
 }

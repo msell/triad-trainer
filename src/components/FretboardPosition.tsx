@@ -39,14 +39,15 @@ export const FretboardPosition = ({
 }: Props) => {
   const { themed } = useAppTheme()
 
-  const fretSpacing = (height - TOP_MARGIN) / NUMBER_OF_FRETS
-
   const screenWidth = Dimensions.get("window").width
   const exactWidth = screenWidth * 0.9
   const stringSpacing = exactWidth / NUM_STRINGS
 
   const fretRange = calculateFretRange(notes)
   const startingFret = fretRange.minFret
+  const maxNoteFret = Math.max(...notes.map((n) => n.fret), startingFret)
+  const numberOfFrets = Math.max(NUMBER_OF_FRETS, maxNoteFret - startingFret + 1)
+  const fretSpacing = (height - TOP_MARGIN) / numberOfFrets
 
   const fretOffsetY = useCallback(
     (fretNumber: number) => fretNumber * fretSpacing + TOP_MARGIN + 3,
@@ -83,7 +84,7 @@ export const FretboardPosition = ({
   return (
     <Canvas style={[themed($canvas), { width: exactWidth, height }]}>
       <Group>
-        {Array.from({ length: NUMBER_OF_FRETS }).map((_, index) => (
+        {Array.from({ length: numberOfFrets }).map((_, index) => (
           <Fret key={index} offset={fretOffsetY(index)} color={FRET_COLOR} width={exactWidth} />
         ))}
       </Group>

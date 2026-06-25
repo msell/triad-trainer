@@ -6,8 +6,8 @@ import { $styles } from "@/theme"
 import { ChordType, Inversion, StringSet } from "@/types"
 import { getTriads } from "@/utils/getTriads"
 import { makeImageFromView } from "@shopify/react-native-skia"
-import { Audio } from "expo-av"
-import { File, Paths } from "expo-file-system/next"
+import { useAudioPlayer } from "expo-audio"
+import { File, Paths } from "expo-file-system"
 import * as MediaLibrary from "expo-media-library"
 import { useRef, useState } from "react"
 import { Platform, View, ViewStyle, Dimensions } from "react-native"
@@ -26,6 +26,7 @@ export default function TriadScreen() {
   const [selectedStringSet, setSelectedStringSet] = useState<StringSet>(1)
   const [selectedNote, setSelectedNote] = useState<string>("A")
   const [pulseRoot, setPulseRoot] = useState(true)
+  const shutterPlayer = useAudioPlayer(require("../../assets/sounds/camera-shutter.wav"))
 
   const windowHeight = Dimensions.get("window").height
   const fretboardHeight = Math.min(
@@ -33,11 +34,9 @@ export default function TriadScreen() {
     windowHeight - insets.top - insets.bottom - CONTROLS_HEIGHT,
   )
 
-  async function playSound() {
-    const { sound } = await Audio.Sound.createAsync(
-      require("../../assets/sounds/camera-shutter.wav"),
-    )
-    await sound.playAsync()
+  function playSound() {
+    shutterPlayer.seekTo(0)
+    shutterPlayer.play()
   }
 
   const onSnapshot = async () => {

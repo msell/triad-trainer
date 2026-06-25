@@ -1,4 +1,4 @@
-import { useScrollToTop } from "@react-navigation/native"
+import { useScrollToTop } from "expo-router/react-navigation"
 import { StatusBar, StatusBarProps, StatusBarStyle } from "expo-status-bar"
 import { ReactNode, useRef, useState } from "react"
 import {
@@ -207,7 +207,8 @@ function ScreenWithScrolling(props: ScreenProps) {
   return (
     <KeyboardAwareScrollView
       bottomOffset={keyboardBottomOffset}
-      {...{ keyboardShouldPersistTaps, scrollEnabled, ref }}
+      {...{ keyboardShouldPersistTaps, scrollEnabled }}
+      ref={ref as any}
       {...ScrollViewProps}
       onLayout={(e) => {
         onLayout(e)

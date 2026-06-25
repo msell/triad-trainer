@@ -138,9 +138,9 @@ export function Button(props: ButtonProps) {
    */
   function $textStyle({ pressed }: PressableStateCallbackType): StyleProp<TextStyle> {
     return [
-      themed($textPresets[preset]),
+      themed($textPresets[preset]) as TextStyle,
       $textStyleOverride,
-      !!pressed && themed([$pressedTextPresets[preset], $pressedTextStyleOverride]),
+      !!pressed && (themed([$pressedTextPresets[preset], $pressedTextStyleOverride]) as TextStyle),
       !!disabled && $disabledTextStyleOverride,
     ]
   }
@@ -239,7 +239,7 @@ const $pressedViewPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
   reversed: ({ colors }) => ({ backgroundColor: colors.palette.neutral700 }),
 }
 
-const $pressedTextPresets: Record<Presets, ThemedStyle<ViewStyle>> = {
+const $pressedTextPresets: Record<Presets, ThemedStyle<TextStyle>> = {
   default: () => ({ opacity: 0.9 }),
   filled: () => ({ opacity: 0.9 }),
   reversed: () => ({ opacity: 0.9 }),

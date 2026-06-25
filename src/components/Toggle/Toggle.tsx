@@ -187,7 +187,7 @@ export function Toggle<T>(props: ToggleProps<T>) {
           status={status}
           outerStyle={props.inputOuterStyle ?? {}}
           innerStyle={props.inputInnerStyle ?? {}}
-          detailStyle={props.inputDetailStyle ?? {}}
+          detailStyle={(props.inputDetailStyle ?? {}) as Omit<ViewStyle & ImageStyle, "overflow">}
         />
 
         {labelPosition === "right" && <FieldLabel<T> {...props} labelPosition={labelPosition} />}

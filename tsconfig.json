@@ -16,7 +16,6 @@
     ],
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
@@ -44,6 +43,8 @@
   ],
   "exclude": [
     "node_modules",
-    "test/**/*"
+    "test/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

@@ -13,9 +13,6 @@
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/9d8e01ca-0bc0-4adf-97e4-e5a43fa9de32"
     },
-    "newArchEnabled": true,
-    "jsEngine": "hermes",
-    "assetBundlePatterns": ["**/*"],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
       "package": "com.atomicbytes.triadtrainer",
@@ -57,11 +54,14 @@
           "backgroundColor": "#191015"
         }
       ],
-      "expo-router"
+      "expo-router",
+      "expo-status-bar",
+      "expo-audio"
     ],
     "experiments": {
       "tsconfigPaths": true,
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
       "router": {

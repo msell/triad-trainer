@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Slot, SplashScreen } from "expo-router"
-import { ThemeProvider as NavThemeProvider } from "@react-navigation/native"
+import { ThemeProvider as NavThemeProvider } from "expo-router/react-navigation"
 import { KeyboardProvider } from "react-native-keyboard-controller"
 
 import { useFonts } from "@expo-google-fonts/space-grotesk"

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { StyleProp, useColorScheme } from "react-native"
-import { DarkTheme, DefaultTheme, useTheme as useNavTheme } from "@react-navigation/native"
+import { DarkTheme, DefaultTheme, useTheme as useNavTheme } from "expo-router/react-navigation"
 import {
   type Theme,
   type ThemeContexts,
@@ -39,7 +39,8 @@ export const useThemeProvider = (initialTheme: ThemeContexts = undefined) => {
     setTheme(newTheme)
   }, [])
 
-  const themeScheme = overrideTheme || colorScheme || "light"
+  const systemScheme: ThemeContexts = colorScheme === "dark" ? "dark" : "light"
+  const themeScheme = overrideTheme || systemScheme
   const navigationTheme = themeScheme === "dark" ? DarkTheme : DefaultTheme
 
   useEffect(() => {

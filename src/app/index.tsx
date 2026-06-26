@@ -44,7 +44,7 @@ export default function TriadScreen() {
       try {
         const { status } = Platform.OS === "ios"
           ? await MediaLibrary.requestPermissionsAsync(true, ["photo"])
-          : await MediaLibrary.requestPermissionsAsync()
+          : await MediaLibrary.requestPermissionsAsync(true)
         if (status !== "granted") {
           throw new Error("Permission to access media library was denied")
         }
